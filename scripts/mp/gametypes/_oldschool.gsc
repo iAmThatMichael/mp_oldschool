@@ -86,6 +86,7 @@ function give_custom_loadout()
 //	******************************
 //	DEBUG
 //	******************************
+// TODO - Add to HUD
 function debug_commands()
 {
 	self endon( "death" );
@@ -110,6 +111,13 @@ function debug_commands()
 			while ( self ActionSlotOneButtonPressed() )
 				WAIT_SERVER_FRAME;
 		}
+		// +actionslot 3 -- PRINT POINTS
+		if ( self ActionSlotOneButtonPressed() )
+		{
+			self print_points();
+			while ( self ActionSlotOneButtonPressed() )
+				WAIT_SERVER_FRAME;
+		}
 		WAIT_SERVER_FRAME;
 	}
 }
@@ -124,4 +132,12 @@ function remove_point()
 {
 	IPrintLn( "Removing Point: " + self.origin );
 	array::pop( level.dev_points );
+}
+
+function print_points()
+{
+	foreach( point in level.dev_points )
+	{
+		IPrintLn( "ARRAY_ADD( a_spawn_points[ \"" + level.script + "\" ], " + point + " )");
+	}
 }

@@ -18,7 +18,7 @@
 #insert scripts\mp\gametypes\oldschool.gsh;
 
 #namespace oldschool_points;
-
+// TODO - Cleanup & Convert to objects/struct
 function get_spawn_points()
 {
 	a_spawn_points = [];
