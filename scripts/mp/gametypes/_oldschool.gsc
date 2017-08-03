@@ -23,7 +23,8 @@ function autoexec init()
 	if ( !IsInArray( StrTok("tdm dm", " "), ToLower( GetDvarString( "g_gametype" ) ) ) )
 		return;
 
-	MAKE_ARRAY( level.dev_points );
+	level.dev_points = [];
+	level.dev_points_type = "equipment";
 	level.giveCustomLoadout = &give_custom_loadout;
 
 	callback::on_connect( &on_player_connect ); // force teams on connecting
@@ -35,10 +36,7 @@ function start_gametype()
 {
 	a_spawn_points = [];
 	a_spawn_points = oldschool_points::get_spawn_points();
-	foreach( point in a_spawn_points )
-	{
-		IPrintLnBold( "Position: " + point );
-	}
+	// do the spawning
 }
 
 function on_player_connect()
@@ -65,7 +63,7 @@ function on_player_connect()
 
 function on_player_spawned()
 {
-	self thread debug_commands();
+	self thread oldschool_points::debug_commands();
 }
 
 function give_custom_loadout()
@@ -81,63 +79,4 @@ function give_custom_loadout()
 	self SetSpawnWeapon( primary_weapon );
 
 	return primary_weapon;
-}
-
-//	******************************
-//	DEBUG
-//	******************************
-// TODO - Add to HUD
-function debug_commands()
-{
-	self endon( "death" );
-	self endon( "disconnect" );
-
-	if ( !self IsHost() )
-		return;
-
-	while ( true )
-	{
-		// +activate -- ADD POINT
-		if ( self UseButtonPressed() )
-		{
-			self add_point();
-			while ( self UseButtonPressed() )
-				WAIT_SERVER_FRAME;
-		}
-		// +actionslot 1 -- REMOVE POINT
-		if ( self ActionSlotOneButtonPressed() )
-		{
-			self remove_point();
-			while ( self ActionSlotOneButtonPressed() )
-				WAIT_SERVER_FRAME;
-		}
-		// +actionslot 3 -- PRINT POINTS
-		if ( self ActionSlotOneButtonPressed() )
-		{
-			self print_points();
-			while ( self ActionSlotOneButtonPressed() )
-				WAIT_SERVER_FRAME;
-		}
-		WAIT_SERVER_FRAME;
-	}
-}
-
-function add_point()
-{
-	IPrintLn( "Placing Point: " + self.origin );
-	array::push( level.dev_points, self.origin );
-}
-
-function remove_point()
-{
-	IPrintLn( "Removing Point: " + self.origin );
-	array::pop( level.dev_points );
-}
-
-function print_points()
-{
-	foreach( point in level.dev_points )
-	{
-		IPrintLn( "ARRAY_ADD( a_spawn_points[ \"" + level.script + "\" ], " + point + " )");
-	}
 }
