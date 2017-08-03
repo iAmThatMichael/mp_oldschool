@@ -20,7 +20,7 @@
 
 function autoexec init()
 {
-	if ( !IsInArray( StrTok("tdm dm", " "), ToLower( GetDvarString( "g_gametype" ) ) ) )
+	if ( !IsInArray( Array( "tdm", "dm" ), ToLower( GetDvarString( "g_gametype" ) ) ) )
 		return;
 
 	level.dev_points = [];
@@ -34,9 +34,7 @@ function autoexec init()
 
 function start_gametype()
 {
-	a_spawn_points = [];
-	a_spawn_points = oldschool_points::get_spawn_points();
-	// do the spawning
+	spawn_items( oldschool_points::get_spawn_points() );
 }
 
 function on_player_connect()
@@ -79,4 +77,41 @@ function give_custom_loadout()
 	self SetSpawnWeapon( primary_weapon );
 
 	return primary_weapon;
+}
+
+function spawn_items( a_spawn_points )
+{
+	foreach ( point in a_spawn_points )
+	{
+
+	}
+}
+// TODO
+function create_equipment( point )
+{
+	equipment = Array( "equipment" );
+	// Use Spawn
+}
+
+function create_health( point )
+{
+	// Use Spawn
+	// Trigger Thread
+}
+
+function create_perk( point )
+{
+	perks = Array( "perks" );
+	// Use Spawn Ent
+	// Grab model type
+	// Set model type
+	// trigger thread
+}
+
+function create_weapon( point )
+{
+	weapons = Array( "ar_standard", "smg_capacity", "lmg_light", "shotgun_precision", "sniper_powerbolt", "pistol_shotgun" );
+	weapon = GetWeapon( m_array::randomized_selection( weapons ) );
+	ent = Spawn( "weapon_" + weapon.rootWeapon.name + "_mp", point.origin + (0,0,64), 3 );
+	ent ItemWeaponSetAmmo( weapon.clipSize, weapon.maxAmmo );
 }
