@@ -1,0 +1,7 @@
+VERSION			"1"
+CONFIG			"C:\projects\cod\t5\bin\StringEd.cfg"
+
+REFERENCE		PICK_UP_ITEM
+LANG_ENGLISH	"Press ^3[{+activate}]^7 for ^3&&1^7"
+
+ENDMARKER

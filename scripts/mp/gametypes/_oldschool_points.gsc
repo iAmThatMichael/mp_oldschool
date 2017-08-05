@@ -15,13 +15,11 @@
 
 #using scripts\mp\gametypes\_oldschool;
 
-// T7ScriptSuite scripts
-#using scripts\m_shared\array_shared;
-#using scripts\m_shared\lui_shared;
-#using scripts\m_shared\math_shared;
-#using scripts\m_shared\player_shared;
-#using scripts\m_shared\trigger_shared;
-#using scripts\m_shared\util_shared;
+// T7 Script Suite
+#insert scripts\m_shared\utility.gsh;
+T7_SCRIPT_SUITE_INCLUDES
+#insert scripts\m_shared\lui.gsh;
+#insert scripts\m_shared\bits.gsh;
 
 #insert scripts\shared\shared.gsh;
 #insert scripts\mp\gametypes\oldschool.gsh;
@@ -35,7 +33,12 @@ function get_spawn_points()
 	switch( level.script )
 	{
 		case "mp_sector":
-			//ARRAY_ADD( a_spawn_points, create_spawn( "weapon", (0,0,0) ) );
+			ARRAY_ADD( a_spawn_points, create_spawn( "weapon", (631.194, -289.895, 146.125) ) );
+			ARRAY_ADD( a_spawn_points, create_spawn( "weapon", (757.876, -265.068, 146.125) ) );
+			ARRAY_ADD( a_spawn_points, create_spawn( "equipment", (690.704, -645.807, 146.125) ) );
+			ARRAY_ADD( a_spawn_points, create_spawn( "equipment", (767.606, -645.418, 152.545) ) );
+			ARRAY_ADD( a_spawn_points, create_spawn( "equipment", (698.528, -756.297, 146.125) ) );
+			ARRAY_ADD( a_spawn_points, create_spawn( "equipment", (687.746, -856.747, 146.125) ) );
 			break;
 		default:
 			break;
@@ -74,21 +77,21 @@ function debug_commands()
 				WAIT_SERVER_FRAME;
 		}
 		// +actionslot 1 -- REMOVE POINT
-		if ( self ActionSlotOneButtonPressed() )
+		else if ( self ActionSlotOneButtonPressed() )
 		{
 			self remove_point();
 			while ( self ActionSlotOneButtonPressed() )
 				WAIT_SERVER_FRAME;
 		}
 		// +actionslot 2 -- CYCLE POINT TYPE
-		if ( self ActionSlotTwoButtonPressed() )
+		else if ( self ActionSlotTwoButtonPressed() )
 		{
 			self cycle_point();
 			while ( self ActionSlotTwoButtonPressed() )
 				WAIT_SERVER_FRAME;
 		}
 		// +actionslot 3 -- PRINT POINTS
-		if ( self ActionSlotThreeButtonPressed() )
+		else if ( self ActionSlotThreeButtonPressed() )
 		{
 			self print_points();
 			while ( self ActionSlotThreeButtonPressed() )
