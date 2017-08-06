@@ -26,19 +26,26 @@ T7_SCRIPT_SUITE_INCLUDES
 
 #precache( "xmodel", "p7_mp_flag_base" );
 #precache( "string", "MOD_PICK_UP_ITEM" );
-#precache( "fx", "ui/fx_ctf_flag_base_team" );
-#precache( "fx", "ui/fx_ctf_flag_base_team_green" );
-#precache( "fx", "ui/fx_ctf_flag_base_team_red" );
-#precache( "fx", "ui/fx_ctf_flag_base_team_yellow" );
+#precache( "fx", FLAG_FX_BASE );
+#precache( "fx", FLAG_FX_BASE_GREEN );
+#precache( "fx", FLAG_FX_BASE_RED );
+#precache( "fx", FLAG_FX_BASE_YELLOW );
 
 function autoexec init()
 {
 	if ( !IsInArray( Array( "tdm", "dm" ), ToLower( GetDvarString( "g_gametype" ) ) ) )
 		return;
 
+	/#
 	level.dev_points = [];
 	level.dev_points_type = "equipment";
+	#/
 	level.giveCustomLoadout = &give_custom_loadout;
+	
+	level._effect[ "flag_base" ] = FLAG_FX_BASE;
+	level._effect[ "flag_base_green" ] = FLAG_FX_BASE_GREEN;
+	level._effect[ "flag_base_red" ] = FLAG_FX_BASE_RED;
+	level._effect[ "flag_base_yellow" ] = FLAG_FX_BASE_YELLOW;
 
 	callback::on_connect( &on_player_connect ); // force teams on connecting
 	callback::on_spawned( &on_player_spawned ); // extra code on spawning
@@ -49,7 +56,6 @@ function autoexec init()
 
 function start_gametype()
 {
-	//thread weapon_hack();
 	spawn_items( oldschool_points::get_spawn_points() );
 }
 
@@ -78,7 +84,9 @@ function on_player_connect()
 function on_player_spawned()
 {
 	self thread disable_charger();
+	/#
 	self thread oldschool_points::debug_commands();
+	#/
 }
 
 function give_custom_loadout()
@@ -145,13 +153,13 @@ function spawn_item_watcher( item )
 	self.s_model endon( "delete" );
 
 	self.s_model Show();
-	trigger = Spawn( "trigger_radius", self.s_model.origin, 0, 32, 32 );
+	trigger = Spawn( "trigger_radius", self.s_model.origin, 0, 64, 32 );
 	trigger SetCursorHint( "HINT_NOICON" );
 	trigger TriggerIgnoreTeam(); // WHY ARE YOU NECESSARY
 	trigger SetHintString( &"MOD_PICK_UP_ITEM", IString( item.displayname ) );
 	hasBeenPickedUp = false;
 
-	self create_base_fx( "ui/fx_ctf_flag_base_team_green" );
+	self create_base_fx( level._effect[ "flag_base_green" ] );
 
 	// TODO:
 	// convert from bool & break to thread respawn
@@ -234,7 +242,7 @@ function respawn_item_time( item )
 {
 	self.s_model endon( "delete" );
 
-	self create_base_fx( "ui/fx_ctf_flag_base_team_red" );
+	self create_base_fx( level._effect[ "flag_base_red" ] );
 
 	wait 5;
 
@@ -251,7 +259,7 @@ function spawn_base()
 
 	return ent;
 }
-// TODO
+// Equipment Code
 function create_equipment()
 {
 	equipments = Array( "frag_grenade", "hatchet" );
@@ -265,23 +273,30 @@ function create_equipment()
 
 	self thread spawn_item_watcher( weapon ); 
 }
+// Boost Code [TomTheBomb from YouTube]
+// Re-enable the enhanced movement for the user
+function create_boost()
+{
 
-function create_health( self )
+}
+// Health Code
+// Unsure if I want to add this....
+function create_health()
 {
 	// Use Spawn
 	// Trigger Thread
 }
 
-function create_perk( self )
+function create_perk()
 {
 	perks = Array( "perks" );
 	// Use Spawn Ent
-	// Grab model type
-	// Set model type
+	// Determine model
+	// Set model
 	// trigger thread
 }
 
-function create_weapon( self )
+function create_weapon()
 {
 	weapons = Array( "ar_standard", "smg_capacity", "lmg_light", "shotgun_precision", "sniper_powerbolt", "pistol_shotgun" );
 	weapon = GetWeapon( m_array::randomized_selection( weapons ) );

@@ -59,6 +59,7 @@ function create_spawn( type, origin )
 //	DEBUG
 //	******************************
 // TODO - Add to HUD
+/#
 function debug_commands()
 {
 	self endon( "death" );
@@ -125,3 +126,4 @@ function print_points()
 	foreach( point in level.dev_points )
 		IPrintLn( "ARRAY_ADD( a_spawn_points, create_spawn( REP" + point.type + "REP, " + point.origin + " ) );" ); // T7 can't do \" escape sequence.
 }
+#/
