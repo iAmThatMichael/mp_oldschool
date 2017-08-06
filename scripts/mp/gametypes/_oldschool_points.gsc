@@ -37,8 +37,8 @@ function get_spawn_points()
 			ARRAY_ADD( a_spawn_points, create_spawn( "weapon", (757.876, -265.068, 146.125) ) );
 			ARRAY_ADD( a_spawn_points, create_spawn( "equipment", (690.704, -645.807, 146.125) ) );
 			ARRAY_ADD( a_spawn_points, create_spawn( "equipment", (767.606, -645.418, 152.545) ) );
-			ARRAY_ADD( a_spawn_points, create_spawn( "equipment", (698.528, -756.297, 146.125) ) );
-			ARRAY_ADD( a_spawn_points, create_spawn( "equipment", (687.746, -856.747, 146.125) ) );
+			ARRAY_ADD( a_spawn_points, create_spawn( "boost", (698.528, -756.297, 146.125) ) );
+			ARRAY_ADD( a_spawn_points, create_spawn( "boost", (687.746, -856.747, 146.125) ) );
 			break;
 		default:
 			break;
@@ -59,7 +59,6 @@ function create_spawn( type, origin )
 //	DEBUG
 //	******************************
 // TODO - Add to HUD
-/#
 function debug_commands()
 {
 	self endon( "death" );
@@ -126,4 +125,3 @@ function print_points()
 	foreach( point in level.dev_points )
 		IPrintLn( "ARRAY_ADD( a_spawn_points, create_spawn( REP" + point.type + "REP, " + point.origin + " ) );" ); // T7 can't do \" escape sequence.
 }
-#/

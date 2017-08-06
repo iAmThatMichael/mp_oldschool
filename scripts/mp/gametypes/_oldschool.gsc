@@ -5,6 +5,7 @@
 #using scripts\shared\persistence_shared;
 #using scripts\shared\rank_shared;
 #using scripts\shared\system_shared;
+#using scripts\shared\util_shared;
 
 #using scripts\mp\gametypes\_globallogic;
 #using scripts\mp\gametypes\_globallogic_audio;
@@ -141,6 +142,9 @@ function spawn_items( a_spawn_points )
 			case "weapon":
 				point create_weapon();
 				break;
+			case "boost":
+				point thread create_boost(); // only one requiring thread due to internal wait
+				break;
 			default: // should really never get this but whatever
 				AssertMsg( "Unknown spawn type " + point.type + " for oldschool!" );
 				break;
@@ -157,28 +161,39 @@ function spawn_item_watcher( item )
 	trigger SetCursorHint( "HINT_NOICON" );
 	trigger TriggerIgnoreTeam(); // WHY ARE YOU NECESSARY
 	trigger SetHintString( &"MOD_PICK_UP_ITEM", IString( item.displayname ) );
-	hasBeenPickedUp = false;
-
 	self create_base_fx( level._effect[ "flag_base_green" ] );
 
-	// TODO:
-	// convert from bool & break to thread respawn
-	do
+	while( true )
 	{
 		trigger waittill( "trigger", player );
 
-		if ( !IsPlayer( player ) || player IsThrowingGrenade() )
+		if ( !IsPlayer( player ) || player IsThrowingGrenade() || ( IsWeapon( item ) && item.isHeroWeapon && player HasWeapon( item ) ) )
 			continue;
 		// use pressed, is a weapon, and doesn't have the weapon
 		if ( player UseButtonPressed() && IsWeapon( item ) && !player HasWeapon( item ) )
 		{
 			if ( item.inventoryType != "offhand" ) // normal weapon, anything not a grenade
 			{
-				player TakeWeapon( player GetCurrentWeapon() );
-				player GiveWeapon( item );
-				player GiveStartAmmo( item );
-				player SwitchToWeapon( item );
-				hasBeenPickedUp = true;
+				// weapons have 135 camos, 41 reflex, 41 acog, 34 ir, 41 dualoptic possibilies
+				options = player CalcWeaponOptions( RandomInt( 135 ), 0, 0, false, false, false, false );
+				if ( !item.isHeroWeapon )
+				{
+					player TakeWeapon( player take_weapon() );
+					player GiveWeapon( item, options );
+					player GiveStartAmmo( item );
+					if ( !player GadgetIsActive( 0 ) )
+						player SwitchToWeapon( item );
+				}
+				else
+				{
+					player take_player_gadgets();
+
+					player GiveWeapon( item, options );
+					slot = player GadgetGetSlot( item );
+					player GadgetPowerSet( slot, 100.0 );
+					player thread take_gadget_watcher( slot, item );
+				}
+
 				break;
 			}
 			else // grenades
@@ -197,7 +212,6 @@ function spawn_item_watcher( item )
 				player SwitchToOffHand( item );
 				
 				player.grenadeTypePrimaryCount = 1;
-				hasBeenPickedUp = true;
 				break;
 			}
 		}
@@ -221,14 +235,14 @@ function spawn_item_watcher( item )
 			
 			player SetWeaponAmmoStock( item, count );
 				
-			hasBeenPickedUp = true;	
 			break;
 		}
-		else if ( !IsWeapon( item ) ) // boost stuff
+		
+		if ( !IsWeapon( item ) ) // boost stuff
 		{
 
 		}
-	} while ( !hasBeenPickedUp );
+	}
 	
 	trigger Delete();
 	self.s_model Hide();
@@ -236,6 +250,62 @@ function spawn_item_watcher( item )
 	self.s_model PlaySound( "mod_oldschool_pickup" );
 	
 	self thread respawn_item_time( item );
+}
+
+function take_weapon()
+{
+	weapons = self GetWeaponsListPrimaries();
+
+	foreach( weapon in weapons )
+	{
+		if ( !weapon.isgadget )
+		{
+			return weapon;
+		}
+	}
+}
+
+function take_player_gadgets()
+{
+	weapons = self GetWeaponsList( true );
+	foreach ( weapon in weapons )
+	{
+		if ( weapon.isgadget )
+		{
+			self TakeWeapon( weapon );
+		}
+	}
+}
+
+function take_gadget_watcher( slot, weapon )
+{
+	self endon( "death" );
+	self endon( "disconnect" );
+
+	shouldTake = false;
+
+	while ( true )
+	{
+		result = self util::waittill_any_return( "weapon_change", "grenade_pullback" );
+		// make sure to not do it on equipment
+		if ( result == "grenade_pullback" )
+		{
+			// also because shouldTake would return true for this case make sure to stop it
+			shouldTake = false;
+			continue;
+		}
+
+		if ( shouldTake )
+		{
+			self TakeWeapon( weapon );
+			self GadgetPowerSet( slot, 0.0 );
+			break;
+		}
+
+		shouldTake = ( self GetCurrentWeapon() === weapon );
+
+		WAIT_SERVER_FRAME;
+	}
 }
 
 function respawn_item_time( item )
@@ -259,6 +329,32 @@ function spawn_base()
 
 	return ent;
 }
+// Boost Code 
+// Re-enable the enhanced movement for the user [TomTheBomb from YouTube]
+// Spawn a specialist weapon [Dasfonia]
+function create_boost()
+{
+	specialists = Array( "hero_minigun", "hero_lightninggun", "hero_gravityspikes", "hero_armblade", "hero_annihilator", "hero_pineapplegun", "hero_bowlauncher", "hero_chemicalgelgun", "hero_flamethrower" );
+	selected = GetWeapon( m_array::randomized_selection( specialists ) ); //( math::cointoss() ? GetWeapon( m_array::randomized_selection( specialists ) ) ? "exo" );
+	
+	self.respawn_time = RandomIntRange( 1, 5 );
+	wait( self.respawn_time ); // wait first spawn of around 10-60 seconds
+	
+	self.s_model = Spawn( "script_model", self.origin + (0,0,32) );
+	if ( selected === "exo" ) // it's exo
+	{
+		selected = SpawnStruct();
+		selected.displayname = "MOD_EXO";
+	}
+	else
+		self.s_model UseWeaponModel( selected, selected.worldModel );
+
+	self.s_model SetHighDetail( true );
+	self.s_model set_bob_item();
+	self.s_model set_rotate_item();
+
+	self thread spawn_item_watcher( selected ); 
+}
 // Equipment Code
 function create_equipment()
 {
@@ -270,14 +366,9 @@ function create_equipment()
 	self.s_model SetHighDetail( true );
 	self.s_model set_bob_item();
 	self.s_model set_rotate_item();
+	self.respawn_time = 5;
 
 	self thread spawn_item_watcher( weapon ); 
-}
-// Boost Code [TomTheBomb from YouTube]
-// Re-enable the enhanced movement for the user
-function create_boost()
-{
-
 }
 // Health Code
 // Unsure if I want to add this....
@@ -306,6 +397,7 @@ function create_weapon()
 	self.s_model SetHighDetail( true );
 	self.s_model set_bob_item();
 	self.s_model set_rotate_item();
+	self.respawn_time = 5;
 
 	self thread spawn_item_watcher( weapon ); 
 }
