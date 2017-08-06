@@ -2,6 +2,7 @@
 #using scripts\shared\array_shared;
 #using scripts\shared\callbacks_shared;
 #using scripts\shared\hud_util_shared;
+#using scripts\shared\math_shared;
 #using scripts\shared\persistence_shared;
 #using scripts\shared\rank_shared;
 #using scripts\shared\system_shared;
@@ -109,17 +110,18 @@ function give_custom_loadout()
 
 function disable_charger()
 {
-    self endon( "death" );
-    self endon( "disconnect" );
+	self endon( "death" );
+	self endon( "disconnect" );
 
     self AllowDoubleJump( false );
+    self.exo_enabled = false;
     
-    while ( true )
-    {
-        self SetDoubleJumpEnergy( 0 );
-        self ResetDoubleJumpRechargeTime();
-        WAIT_SERVER_FRAME;
-    }
+	while ( !self.exo_enabled )
+	{
+		self SetDoubleJumpEnergy( 0 );
+		self ResetDoubleJumpRechargeTime();
+		WAIT_SERVER_FRAME;
+	}
 }
 
 function spawn_items( a_spawn_points )
@@ -238,9 +240,21 @@ function spawn_item_watcher( item )
 			break;
 		}
 		
-		if ( !IsWeapon( item ) ) // boost stuff
+		if ( player UseButtonPressed() && !IsWeapon( item ) ) // boost stuff
 		{
+			switch( item.type )
+			{
+				case "exo":
+				{
+					if ( !IS_TRUE( self.exo_enabled ) )
+						player thread set_exo_for_time( 15 );
+				}
+					break;
+				default:
+					break;
+			}
 
+			break;
 		}
 	}
 	
@@ -250,6 +264,20 @@ function spawn_item_watcher( item )
 	self.s_model PlaySound( "mod_oldschool_pickup" );
 	
 	self thread respawn_item_time( item );
+}
+
+function set_exo_for_time( time )
+{
+	self endon( "death" );
+	self endon( "disconnect" );
+
+	self.exo_enabled = true;
+	self AllowDoubleJump( true );
+
+	wait( time );
+
+	self.exo_enabled = false;
+	self AllowDoubleJump( false );
 }
 
 function take_weapon()
@@ -335,7 +363,7 @@ function spawn_base()
 function create_boost()
 {
 	specialists = Array( "hero_minigun", "hero_lightninggun", "hero_gravityspikes", "hero_armblade", "hero_annihilator", "hero_pineapplegun", "hero_bowlauncher", "hero_chemicalgelgun", "hero_flamethrower" );
-	selected = GetWeapon( m_array::randomized_selection( specialists ) ); //( math::cointoss() ? GetWeapon( m_array::randomized_selection( specialists ) ) ? "exo" );
+	selected = ( math::cointoss() ? GetWeapon( m_array::randomized_selection( specialists ) ) : "exo" );
 	
 	self.respawn_time = RandomIntRange( 1, 5 );
 	wait( self.respawn_time ); // wait first spawn of around 10-60 seconds
@@ -345,6 +373,8 @@ function create_boost()
 	{
 		selected = SpawnStruct();
 		selected.displayname = "MOD_EXO";
+		selected.type = "exo";
+		self.s_model SetModel( "p7_perk_t7_hud_perk_jetcharge" );
 	}
 	else
 		self.s_model UseWeaponModel( selected, selected.worldModel );
