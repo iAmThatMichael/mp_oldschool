@@ -26,6 +26,10 @@ T7_SCRIPT_SUITE_INCLUDES
 
 #precache( "xmodel", "p7_mp_flag_base" );
 #precache( "string", "MOD_PICK_UP_ITEM" );
+#precache( "fx", "ui/fx_ctf_flag_base_team" );
+#precache( "fx", "ui/fx_ctf_flag_base_team_green" );
+#precache( "fx", "ui/fx_ctf_flag_base_team_red" );
+#precache( "fx", "ui/fx_ctf_flag_base_team_yellow" );
 
 function autoexec init()
 {
@@ -95,6 +99,7 @@ function spawn_items( a_spawn_points )
 {
 	foreach ( point in a_spawn_points )
 	{
+		point.base = spawn_base( point );
 		//( "equipment", "health", "perk", "weapon" );
 		switch( point.type )
 		{
@@ -116,62 +121,20 @@ function spawn_items( a_spawn_points )
 		}
 	}
 }
-function spawn_base( point )
+
+function spawn_item_watcher( item )
 {
-	ent = Spawn( "script_model", point.origin );
-	ent SetModel( "p7_mp_flag_base" );
-	ent SetHighDetail( true );
-}
-// TODO
-function create_equipment( point )
-{
-	equipments = Array( "frag_grenade", "hatchet" );
+	self.s_model endon( "delete" );
 
-	weapon = GetWeapon( m_array::randomized_selection( equipments ) );
-	ent = Spawn( "script_model", point.origin + (0,0,64) );
-	ent UseWeaponModel( weapon, weapon.worldModel );
-	ent SetHighDetail( true );
-
-	ent thread spawned_item_watcher( weapon ); 
-}
-
-function create_health( point )
-{
-	// Use Spawn
-	// Trigger Thread
-}
-
-function create_perk( point )
-{
-	perks = Array( "perks" );
-	// Use Spawn Ent
-	// Grab model type
-	// Set model type
-	// trigger thread
-}
-
-function create_weapon( point )
-{
-	weapons = Array( "ar_standard", "smg_capacity", "lmg_light", "shotgun_precision", "sniper_powerbolt", "pistol_shotgun" );
-	weapon = GetWeapon( m_array::randomized_selection( weapons ) );
-	
-	ent = Spawn( "script_model", point.origin + (0,0,24) );
-	ent UseWeaponModel( weapon, weapon.worldModel );
-	ent SetHighDetail( true );
-
-	ent thread spawned_item_watcher( weapon ); 
-}
-
-function spawned_item_watcher( item )
-{
-	self endon( "delete" );
-
-	self Show();
-	trigger = Spawn( "trigger_radius", self.origin, 0, 32, 32 );
+	self.s_model Show();
+	trigger = Spawn( "trigger_radius", self.s_model.origin, 0, 32, 32 );
 	trigger SetCursorHint( "HINT_NOICON" );
 	trigger TriggerIgnoreTeam(); // WHY ARE YOU NECESSARY
 	trigger SetHintString( &"MOD_PICK_UP_ITEM", IString( item.displayname ) );
 	hasBeenPickedUp = false;
+
+	self create_base_fx( "ui/fx_ctf_flag_base_team_green" );
+
 	// TODO:
 	// convert from bool & break to thread respawn
 	do
@@ -183,7 +146,7 @@ function spawned_item_watcher( item )
 		// use pressed, is a weapon, and doesn't have the weapon
 		if ( player UseButtonPressed() && IsWeapon( item ) && !player HasWeapon( item ) )
 		{
-			if ( !item.isgrenadeweapon ) // normal weapon, anything not a grenade
+			if ( item.inventoryType != "offhand" ) // normal weapon, anything not a grenade
 			{
 				player TakeWeapon( player GetCurrentWeapon() );
 				player GiveWeapon( item );
@@ -221,7 +184,7 @@ function spawned_item_watcher( item )
 			if ( stock == maxAmmo )
 				continue;
 			// if normal weapon, get proper ammo count
-			if ( !item.isgrenadeweapon )
+			if ( item.inventoryType != "offhand" )
 				count = ( stock + item.clipSize <= maxAmmo ? stock + item.clipSize : maxAmmo );
 			// if is grenade just return only 1 for ammo
 			else
@@ -242,17 +205,90 @@ function spawned_item_watcher( item )
 	} while ( !hasBeenPickedUp );
 	
 	trigger Delete();
-	self Hide();
+	self.s_model Hide();
 	
-	self thread respawn_item_time( 5, item );
+	self thread respawn_item_time( item );
 }
 
-function respawn_item_time( time, item )
+function respawn_item_time( item )
 {
-	self endon( "delete" );
-	IPrintLn( "Respawning item in " + time );
+	self.s_model endon( "delete" );
 
-	wait time;
-	IPrintLnBold( "Respawned Item" );
-	self thread spawned_item_watcher( item );
+	self create_base_fx( "ui/fx_ctf_flag_base_team_red" );
+
+	wait 5;
+
+	self thread spawn_item_watcher( item );
+}
+
+
+function spawn_base( point )
+{
+	ent = Spawn( "script_model", point.origin );
+	ent SetModel( "p7_mp_flag_base" );
+	ent SetHighDetail( true );
+
+	return ent;
+}
+// TODO
+function create_equipment( point )
+{
+	equipments = Array( "frag_grenade", "hatchet" );
+	weapon = GetWeapon( m_array::randomized_selection( equipments ) );
+
+	point.s_model = Spawn( "script_model", point.origin + (0,0,32) );
+	point.s_model UseWeaponModel( weapon, weapon.worldModel );
+	point.s_model SetHighDetail( true );
+	point.s_model set_bob_item();
+	point.s_model set_rotate_item();
+
+	point thread spawn_item_watcher( weapon ); 
+}
+
+function create_health( point )
+{
+	// Use Spawn
+	// Trigger Thread
+}
+
+function create_perk( point )
+{
+	perks = Array( "perks" );
+	// Use Spawn Ent
+	// Grab model type
+	// Set model type
+	// trigger thread
+}
+
+function create_weapon( point )
+{
+	weapons = Array( "ar_standard", "smg_capacity", "lmg_light", "shotgun_precision", "sniper_powerbolt", "pistol_shotgun" );
+	weapon = GetWeapon( m_array::randomized_selection( weapons ) );
+	
+	point.s_model = Spawn( "script_model", point.origin + (0,0,32) );
+	point.s_model UseWeaponModel( weapon, weapon.worldModel );
+	point.s_model SetHighDetail( true );
+	point.s_model set_bob_item();
+	point.s_model set_rotate_item();
+
+	point thread spawn_item_watcher( weapon ); 
+}
+
+function create_base_fx( fx )
+{
+	if ( isdefined( self.base.fx ) )
+		self.base.fx Delete();
+
+	self.base.fx = SpawnFX( fx, self.origin );
+	TriggerFX( self.base.fx, 0.001 );
+}
+
+function set_bob_item()
+{
+	self Bobbing( (0,0,1), PICKUP_BOB_DISTANCE, 1 );
+}
+
+function set_rotate_item()
+{
+	self Rotate( (0,PICKUP_ROTATE_RATE,0) );
 }
