@@ -1,2 +1,5 @@
 zone_source/*
 zone/*
+scripts/m_shared
+english/sound/*
+sound/zone/*

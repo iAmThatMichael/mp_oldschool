@@ -43,6 +43,8 @@ function autoexec init()
 	callback::on_connect( &on_player_connect ); // force teams on connecting
 	callback::on_spawned( &on_player_spawned ); // extra code on spawning
 	callback::on_start_gametype( &start_gametype );
+
+	SetJumpHeight( 64 ); // stock is 39?
 }
 
 function start_gametype()
@@ -75,6 +77,7 @@ function on_player_connect()
 
 function on_player_spawned()
 {
+	self thread disable_charger();
 	self thread oldschool_points::debug_commands();
 }
 
@@ -95,25 +98,40 @@ function give_custom_loadout()
 	return primary_weapon;
 }
 
+function disable_charger()
+{
+    self endon( "death" );
+    self endon( "disconnect" );
+
+    self AllowDoubleJump( false );
+    
+    while ( true )
+    {
+        self SetDoubleJumpEnergy( 0 );
+        self ResetDoubleJumpRechargeTime();
+        WAIT_SERVER_FRAME;
+    }
+}
+
 function spawn_items( a_spawn_points )
 {
 	foreach ( point in a_spawn_points )
 	{
-		point.base = spawn_base( point );
-		//( "equipment", "health", "perk", "weapon" );
+		point.base = point spawn_base();
+
 		switch( point.type )
 		{
 			case "equipment":
-				create_equipment( point );
+				point create_equipment();
 				break;
 			case "health":
-				create_health( point );
+				point create_health();
 				break;
 			case "perk":
-				create_perk( point );
+				point create_perk();
 				break;
 			case "weapon":
-				create_weapon( point );
+				point create_weapon();
 				break;
 			default: // should really never get this but whatever
 				AssertMsg( "Unknown spawn type " + point.type + " for oldschool!" );
@@ -206,6 +224,8 @@ function spawn_item_watcher( item )
 	
 	trigger Delete();
 	self.s_model Hide();
+
+	self.s_model PlaySound( "mod_oldschool_pickup" );
 	
 	self thread respawn_item_time( item );
 }
@@ -219,39 +239,40 @@ function respawn_item_time( item )
 	wait 5;
 
 	self thread spawn_item_watcher( item );
+	self.s_model PlaySound( "mod_oldschool_return" );
 }
 
 
-function spawn_base( point )
+function spawn_base()
 {
-	ent = Spawn( "script_model", point.origin );
+	ent = Spawn( "script_model", self.origin );
 	ent SetModel( "p7_mp_flag_base" );
 	ent SetHighDetail( true );
 
 	return ent;
 }
 // TODO
-function create_equipment( point )
+function create_equipment()
 {
 	equipments = Array( "frag_grenade", "hatchet" );
 	weapon = GetWeapon( m_array::randomized_selection( equipments ) );
 
-	point.s_model = Spawn( "script_model", point.origin + (0,0,32) );
-	point.s_model UseWeaponModel( weapon, weapon.worldModel );
-	point.s_model SetHighDetail( true );
-	point.s_model set_bob_item();
-	point.s_model set_rotate_item();
+	self.s_model = Spawn( "script_model", self.origin + (0,0,32) );
+	self.s_model UseWeaponModel( weapon, weapon.worldModel );
+	self.s_model SetHighDetail( true );
+	self.s_model set_bob_item();
+	self.s_model set_rotate_item();
 
-	point thread spawn_item_watcher( weapon ); 
+	self thread spawn_item_watcher( weapon ); 
 }
 
-function create_health( point )
+function create_health( self )
 {
 	// Use Spawn
 	// Trigger Thread
 }
 
-function create_perk( point )
+function create_perk( self )
 {
 	perks = Array( "perks" );
 	// Use Spawn Ent
@@ -260,18 +281,18 @@ function create_perk( point )
 	// trigger thread
 }
 
-function create_weapon( point )
+function create_weapon( self )
 {
 	weapons = Array( "ar_standard", "smg_capacity", "lmg_light", "shotgun_precision", "sniper_powerbolt", "pistol_shotgun" );
 	weapon = GetWeapon( m_array::randomized_selection( weapons ) );
 	
-	point.s_model = Spawn( "script_model", point.origin + (0,0,32) );
-	point.s_model UseWeaponModel( weapon, weapon.worldModel );
-	point.s_model SetHighDetail( true );
-	point.s_model set_bob_item();
-	point.s_model set_rotate_item();
+	self.s_model = Spawn( "script_model", self.origin + (0,0,32) );
+	self.s_model UseWeaponModel( weapon, weapon.worldModel );
+	self.s_model SetHighDetail( true );
+	self.s_model set_bob_item();
+	self.s_model set_rotate_item();
 
-	point thread spawn_item_watcher( weapon ); 
+	self thread spawn_item_watcher( weapon ); 
 }
 
 function create_base_fx( fx )
