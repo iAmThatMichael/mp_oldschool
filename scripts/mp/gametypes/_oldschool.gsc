@@ -13,6 +13,7 @@
 #using scripts\mp\gametypes\_globallogic_score;
 #using scripts\mp\gametypes\_loadout;
 
+#using scripts\mp\gametypes\_oldschool_items;
 #using scripts\mp\gametypes\_oldschool_points;
 
 #insert scripts\shared\shared.gsh;
@@ -31,10 +32,10 @@ function autoexec init()
 	#/
 	level.giveCustomLoadout = &give_custom_loadout;
 
-	level._effect[ "flag_base" ] = FLAG_FX_BASE;
-	level._effect[ "flag_base_green" ] = FLAG_FX_BASE_GREEN;
-	level._effect[ "flag_base_red" ] = FLAG_FX_BASE_RED;
-	level._effect[ "flag_base_yellow" ] = FLAG_FX_BASE_YELLOW;
+	level._effect[ "flag_base" ] = FX_FLAG_BASE;
+	level._effect[ "flag_base_green" ] = FX_FLAG_BASE_GREEN;
+	level._effect[ "flag_base_red" ] = FX_FLAG_BASE_RED;
+	level._effect[ "flag_base_yellow" ] = FX_FLAG_BASE_YELLOW;
 
 	callback::on_connect( &on_player_connect ); // force teams on connecting
 	callback::on_spawned( &on_player_spawned ); // extra code on spawning

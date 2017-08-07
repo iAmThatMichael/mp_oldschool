@@ -13,14 +13,11 @@
 #using scripts\mp\gametypes\_globallogic_score;
 #using scripts\mp\gametypes\_loadout;
 
+// T7ScriptSuite
+#using scripts\m_shared\array_shared;
+
 #insert scripts\shared\shared.gsh;
 #insert scripts\mp\gametypes\oldschool.gsh;
-
-// T7 Script Suite
-#insert scripts\m_shared\utility.gsh;
-T7_SCRIPT_SUITE_INCLUDES
-#insert scripts\m_shared\lui.gsh;
-#insert scripts\m_shared\bits.gsh;
 
 #precache( "fx", FX_FLAG_BASE );
 #precache( "fx", FX_FLAG_BASE_GREEN );
@@ -97,9 +94,7 @@ function create_equipment()
 
 	self.respawn_time = 5;
 
-	wait( self.respawn_time );
-
-	self thread spawned_item_pickup( weapon );
+	self thread spawned_item_pickup( selected );
 }
 // Health Code
 // Unsure if I want to add this....
@@ -126,8 +121,6 @@ function create_weapon()
 
 	self.respawn_time = 5;
 
-	wait( self.respawn_time );
-
 	self thread spawned_item_pickup( selected );
 }
 
@@ -138,7 +131,7 @@ function create_weapon()
 function spawn_base()
 {
 	ent = Spawn( "script_model", self.origin );
-	ent SetModel( "p7_mp_flag_base" );
+	ent SetModel( MDL_FLAG_BASE );
 	ent SetHighDetail( true );
 
 	return ent;
@@ -191,7 +184,7 @@ function spawned_item_pickup( item )
 
 	while( true )
 	{
-		trigger waittill( "trigger", player );
+		self.trigger waittill( "trigger", player );
 
 		if ( !IsPlayer( player ) || player IsThrowingGrenade() || ( IsWeapon( item ) && item.isHeroWeapon && player HasWeapon( item ) ) )
 			continue;
@@ -324,6 +317,7 @@ function select_equipment()
 function select_perk()
 {
 	perks = Array( "perks" );
+	selected = m_array::randomized_selection( perks );
 
 	return selected;
 }

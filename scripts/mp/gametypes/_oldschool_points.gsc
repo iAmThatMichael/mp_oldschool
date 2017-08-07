@@ -13,6 +13,9 @@
 
 #using scripts\mp\gametypes\_oldschool;
 
+// T7ScriptSuite
+#using scripts\m_shared\array_shared;
+
 #insert scripts\shared\shared.gsh;
 #insert scripts\mp\gametypes\oldschool.gsh;
 
