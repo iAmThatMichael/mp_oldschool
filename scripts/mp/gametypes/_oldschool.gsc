@@ -25,10 +25,9 @@ function autoexec init()
 {
 	if ( !IsInArray( Array( "tdm", "dm" ), ToLower( GetDvarString( "g_gametype" ) ) ) )
 		return;
-
 	/#
 	level.dev_points = [];
-	level.dev_points_type = "equipment";
+	level.dev_points_type = "boost";
 	#/
 	level.giveCustomLoadout = &give_custom_loadout;
 

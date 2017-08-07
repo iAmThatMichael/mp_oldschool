@@ -32,7 +32,7 @@ function get_spawn_points()
 			ARRAY_ADD( a_spawn_points, create_spawn( "weapon", (757.876, -265.068, 146.125) ) );
 			ARRAY_ADD( a_spawn_points, create_spawn( "equipment", (690.704, -645.807, 146.125) ) );
 			ARRAY_ADD( a_spawn_points, create_spawn( "equipment", (767.606, -645.418, 152.545) ) );
-			ARRAY_ADD( a_spawn_points, create_spawn( "boost", (698.528, -756.297, 146.125) ) );
+			ARRAY_ADD( a_spawn_points, create_spawn( "health", (698.528, -756.297, 146.125) ) );
 			ARRAY_ADD( a_spawn_points, create_spawn( "boost", (687.746, -856.747, 146.125) ) );
 			break;
 		default:
@@ -110,7 +110,7 @@ function remove_point()
 
 function cycle_point()
 {
-	types = Array( "equipment", "health", "perk", "weapon" );
+	types = Array( "boost", "equipment", "health", "perk", "weapon" );
 	level.dev_points_type = m_array::get_next_in_array( types, level.dev_points_type );
 	IPrintLn( "Now placing type: " + level.dev_points_type );
 }
