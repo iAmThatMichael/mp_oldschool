@@ -1,3 +1,5 @@
+// Base Models
+#define MDL_FLAG_BASE "p7_mp_flag_base"
 // Perk Models
 #define MDL_PERK_SILENCER "p7_perk_t7_hud_perk_jetsilencer"
 #define MDL_PERK_FASTHANDS "p7_perk_t7_hud_perk_fasthands"
@@ -9,7 +11,7 @@
 // Data
 #define PICKUP_ROTATE_RATE 175
 #define PICKUP_BOB_DISTANCE 4
-#define FLAG_FX_BASE "ui/fx_ctf_flag_base_team"
-#define FLAG_FX_BASE_GREEN "ui/fx_ctf_flag_base_team_green"
-#define FLAG_FX_BASE_RED "ui/fx_ctf_flag_base_team_red"
-#define FLAG_FX_BASE_YELLOW "ui/fx_ctf_flag_base_team_yellow"
+#define FX_FLAG_BASE "ui/fx_ctf_flag_base_team"
+#define FX_FLAG_BASE_GREEN "ui/fx_ctf_flag_base_team_green"
+#define FX_FLAG_BASE_RED "ui/fx_ctf_flag_base_team_red"
+#define FX_FLAG_BASE_YELLOW "ui/fx_ctf_flag_base_team_yellow"

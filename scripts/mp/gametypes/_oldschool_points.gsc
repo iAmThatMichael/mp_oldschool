@@ -11,21 +11,13 @@
 #using scripts\mp\gametypes\_globallogic_score;
 #using scripts\mp\gametypes\_loadout;
 
-#using scripts\mp\_pickup_items; // TODO
-
 #using scripts\mp\gametypes\_oldschool;
-
-// T7 Script Suite
-#insert scripts\m_shared\utility.gsh;
-T7_SCRIPT_SUITE_INCLUDES
-#insert scripts\m_shared\lui.gsh;
-#insert scripts\m_shared\bits.gsh;
 
 #insert scripts\shared\shared.gsh;
 #insert scripts\mp\gametypes\oldschool.gsh;
 
 #namespace oldschool_points;
-// TODO - Cleanup & Convert to objects/struct
+
 function get_spawn_points()
 {
 	a_spawn_points = [];

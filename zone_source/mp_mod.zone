@@ -1,0 +1,36 @@
+>mode,mp
+>type,common
+
+#include "mp_mod.class"
+
+rawfile,gamedata\gamesettings\mp\gamesettings_dm.cfg
+rawfile,gamedata\gamesettings\mp\gamesettings_tdm.cfg
+
+scriptparsetree,scripts\mp\gametypes\_oldschool.gsc
+scriptparsetree,scripts\mp\gametypes\_oldschool_items.gsc
+scriptparsetree,scripts\mp\gametypes\_oldschool_points.gsc
+scriptparsetree,scripts\mp\_load.gsc
+
+// T7ScriptSuite scripts
+scriptparsetree,scripts/m_shared/array_shared.gsc
+scriptparsetree,scripts/m_shared/lui_shared.gsc
+scriptparsetree,scripts/m_shared/math_shared.gsc
+scriptparsetree,scripts/m_shared/player_shared.gsc
+scriptparsetree,scripts/m_shared/trigger_shared.gsc
+scriptparsetree,scripts/m_shared/util_shared.gsc
+
+scriptparsetree,scripts/shared/weapons/_weaponobjects.gsc
+
+localize,mod
+
+sound,mp_mod
+
+image,uie_t7_hud_boost_meter_dots_arrow_thin
+image,uie_t7_hud_boost_meter_boot_hash
+image,uie_t7_hud_boost_arrow
+image,uie_t7_hud_boost_meter_boot_circle
+image,uie_t7_hud_boost_panel
+image,uie_t7_hud_boost_arrow2
+image,uie_t7_hud_boost_dots
+image,uie_t7_hud_boost_meter_boot_hashcircle
+image,uie_t7_hud_boost_fill

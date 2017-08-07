@@ -1,4 +1,4 @@
-zone_source/*
+zone_source/*/*
 zone/*
 scripts/m_shared
 english/sound/*
