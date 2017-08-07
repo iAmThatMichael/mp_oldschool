@@ -43,7 +43,7 @@ function autoexec init()
 	level.dev_points_type = "equipment";
 	#/
 	level.giveCustomLoadout = &give_custom_loadout;
-	
+
 	level._effect[ "flag_base" ] = FLAG_FX_BASE;
 	level._effect[ "flag_base_green" ] = FLAG_FX_BASE_GREEN;
 	level._effect[ "flag_base_red" ] = FLAG_FX_BASE_RED;
@@ -69,7 +69,7 @@ function on_player_connect()
 	self.pers["team"] = "axis";
 	// moving to a built-in, still setting a team just in case.
 	self SetTeam( "axis" );
-	// set this before to satisfy the spawnClient, need to fill in broken statement _globalloigc_spawn::836 
+	// set this before to satisfy the spawnClient, need to fill in broken statement _globalloigc_spawn::836
 	self.waitingToSpawn = true;
 	// something to satisfy matchRecordLogAdditionalDeathInfo 5th parameter (_globallogic_player)
 	self.class_num = 0;
@@ -80,7 +80,7 @@ function on_player_connect()
 	// notify class selection
 	self notify( "menuresponse", MENU_CHANGE_CLASS, "class_assault" );
 	// close the "Choose Class" menu
-	self CloseMenu( game["menu_changeclass"] );	
+	self CloseMenu( game["menu_changeclass"] );
 }
 
 function on_player_spawned()
@@ -115,7 +115,7 @@ function disable_charger()
 
     self AllowDoubleJump( false );
     self.exo_enabled = false;
-    
+
 	while ( !self.exo_enabled )
 	{
 		self SetDoubleJumpEnergy( 0 );
@@ -129,6 +129,8 @@ function spawn_items( a_spawn_points )
 	foreach ( point in a_spawn_points )
 	{
 		point.base = point spawn_base();
+		point.trigger = point spawn_trigger();
+		point.model = Spawn( "script_model", point.trigger.origin );
 
 		switch( point.type )
 		{
@@ -156,13 +158,10 @@ function spawn_items( a_spawn_points )
 
 function spawn_item_watcher( item )
 {
-	self.s_model endon( "delete" );
+	self.model endon( "delete" );
 
-	self.s_model Show();
-	trigger = Spawn( "trigger_radius", self.s_model.origin, 0, 64, 32 );
-	trigger SetCursorHint( "HINT_NOICON" );
-	trigger TriggerIgnoreTeam(); // WHY ARE YOU NECESSARY
-	trigger SetHintString( &"MOD_PICK_UP_ITEM", IString( item.displayname ) );
+	self.model Show();
+
 	self create_base_fx( level._effect[ "flag_base_green" ] );
 
 	while( true )
@@ -212,7 +211,7 @@ function spawn_item_watcher( item )
 				player GiveWeapon( item );
 				player SetWeaponAmmoClip( item, 1 );
 				player SwitchToOffHand( item );
-				
+
 				player.grenadeTypePrimaryCount = 1;
 				break;
 			}
@@ -234,12 +233,12 @@ function spawn_item_watcher( item )
 				count = 1;
 				player.grenadeTypePrimaryCount = count;
 			}
-			
+
 			player SetWeaponAmmoStock( item, count );
-				
+
 			break;
 		}
-		
+
 		if ( player UseButtonPressed() && !IsWeapon( item ) ) // boost stuff
 		{
 			switch( item.type )
@@ -257,13 +256,151 @@ function spawn_item_watcher( item )
 			break;
 		}
 	}
-	
-	trigger Delete();
-	self.s_model Hide();
 
-	self.s_model PlaySound( "mod_oldschool_pickup" );
-	
+	trigger Delete();
+	self.model Hide();
+
+	self.model PlaySound( "mod_oldschool_pickup" );
+
 	self thread respawn_item_time( item );
+}
+
+
+function spawn_base()
+{
+	ent = Spawn( "script_model", self.origin );
+	ent SetModel( "p7_mp_flag_base" );
+	ent SetHighDetail( true );
+
+	return ent;
+}
+
+function spawn_trigger()
+{
+	trigger = Spawn( "trigger_radius", self.base.origin + (0,0,32), 0, 64, 32 );
+	trigger SetCursorHint( "HINT_NOICON" );
+	trigger TriggerIgnoreTeam(); // WHY ARE YOU NECESSARY
+
+	return trigger;
+}
+
+function spawn_item_model( selected )
+{
+	model = Spawn( "script_model", self.origin + (0,0,32) );
+
+	if ( IsWeapon( selected ) )
+		model SetModel( selected.worldModel );
+	else
+		model UseWeaponModel( selected, selected.worldModel );
+
+
+	model SetHighDetail( true );
+	model set_bob_item();
+	model set_rotate_item();
+
+	return model;
+}
+// Boost Code
+// Re-enable the enhanced movement for the user [TomTheBomb from YouTube]
+// Spawn a specialist weapon [Dasfonia]
+function select_boost()
+{
+	specialists = Array( "hero_minigun", "hero_lightninggun", "hero_gravityspikes", "hero_armblade", "hero_annihilator", "hero_pineapplegun", "hero_bowlauncher", "hero_chemicalgelgun", "hero_flamethrower" );
+	selected = ( math::cointoss() ? GetWeapon( m_array::randomized_selection( specialists ) ) : "exo" );
+
+	if ( selected == "exo" )
+	{
+		selected = SpawnStruct();
+		selected.displayname = "MOD_EXO";
+		selected.type = "exo";
+		selected.worldModel = "p7_perk_t7_hud_perk_jetcharge";
+	}
+
+	return selected;
+}
+
+function select_equipment()
+{
+	equipments = Array( "frag_grenade", "hatchet" );
+	selected = GetWeapon( m_array::randomized_selection( equipments ) );
+
+	return selected;
+}
+
+function select_perk()
+{
+	perks = Array( "perks" );
+
+	return selected;
+}
+
+function select_weapon()
+{
+	weapons = Array( "ar_standard", "smg_capacity", "lmg_light", "shotgun_precision", "sniper_powerbolt", "pistol_shotgun" );
+	selected = GetWeapon( m_array::randomized_selection( weapons ) );
+
+	return selected;
+}
+function create_boost()
+{
+	self.selection_func = &select_boost;
+	selected = [[self.selection_func]]();
+
+	self.respawn_time = RandomIntRange( 1, 5 );
+	wait( self.respawn_time ); // wait first spawn of around 10-60 seconds
+
+
+	self thread spawn_item_watcher( selected );
+}
+// Equipment Code
+function create_equipment()
+{
+	self.selection_func = &select_boost;
+	selected = [[self.selection_func]]();
+
+	self.model SetHighDetail( true );
+	self.model set_bob_item();
+	self.model set_rotate_item();
+	self.respawn_time = 5;
+
+	self thread spawn_item_watcher( weapon );
+}
+// Health Code
+// Unsure if I want to add this....
+function create_health()
+{
+	// Use Spawn
+	// Trigger Thread
+}
+
+function create_perk()
+{
+	perks = Array( "perks" );
+	// Use Spawn Ent
+	// Determine model
+	// Set model
+	// trigger thread
+}
+
+function create_weapon()
+{
+	self.model = Spawn( "script_model", self.origin + (0,0,32) );
+	self.model UseWeaponModel( weapon, weapon.worldModel );
+	self.model SetHighDetail( true );
+	self.model set_bob_item();
+	self.model set_rotate_item();
+	self.respawn_time = 5;
+
+	self thread spawn_item_watcher( weapon );
+}
+
+function create_base_fx( fx )
+{
+	if ( isdefined( self.base.fx ) )
+		self.base.fx Delete();
+
+	self.base.fx = SpawnFX( fx, self.origin );
+	TriggerFX( self.base.fx, 0.001 );
 }
 
 function set_exo_for_time( time )
@@ -338,107 +475,14 @@ function take_gadget_watcher( slot, weapon )
 
 function respawn_item_time( item )
 {
-	self.s_model endon( "delete" );
+	self.model endon( "delete" );
 
 	self create_base_fx( level._effect[ "flag_base_red" ] );
 
 	wait 5;
 
 	self thread spawn_item_watcher( item );
-	self.s_model PlaySound( "mod_oldschool_return" );
-}
-
-
-function spawn_base()
-{
-	ent = Spawn( "script_model", self.origin );
-	ent SetModel( "p7_mp_flag_base" );
-	ent SetHighDetail( true );
-
-	return ent;
-}
-// Boost Code 
-// Re-enable the enhanced movement for the user [TomTheBomb from YouTube]
-// Spawn a specialist weapon [Dasfonia]
-function create_boost()
-{
-	specialists = Array( "hero_minigun", "hero_lightninggun", "hero_gravityspikes", "hero_armblade", "hero_annihilator", "hero_pineapplegun", "hero_bowlauncher", "hero_chemicalgelgun", "hero_flamethrower" );
-	selected = ( math::cointoss() ? GetWeapon( m_array::randomized_selection( specialists ) ) : "exo" );
-	
-	self.respawn_time = RandomIntRange( 1, 5 );
-	wait( self.respawn_time ); // wait first spawn of around 10-60 seconds
-	
-	self.s_model = Spawn( "script_model", self.origin + (0,0,32) );
-	if ( selected === "exo" ) // it's exo
-	{
-		selected = SpawnStruct();
-		selected.displayname = "MOD_EXO";
-		selected.type = "exo";
-		self.s_model SetModel( "p7_perk_t7_hud_perk_jetcharge" );
-	}
-	else
-		self.s_model UseWeaponModel( selected, selected.worldModel );
-
-	self.s_model SetHighDetail( true );
-	self.s_model set_bob_item();
-	self.s_model set_rotate_item();
-
-	self thread spawn_item_watcher( selected ); 
-}
-// Equipment Code
-function create_equipment()
-{
-	equipments = Array( "frag_grenade", "hatchet" );
-	weapon = GetWeapon( m_array::randomized_selection( equipments ) );
-
-	self.s_model = Spawn( "script_model", self.origin + (0,0,32) );
-	self.s_model UseWeaponModel( weapon, weapon.worldModel );
-	self.s_model SetHighDetail( true );
-	self.s_model set_bob_item();
-	self.s_model set_rotate_item();
-	self.respawn_time = 5;
-
-	self thread spawn_item_watcher( weapon ); 
-}
-// Health Code
-// Unsure if I want to add this....
-function create_health()
-{
-	// Use Spawn
-	// Trigger Thread
-}
-
-function create_perk()
-{
-	perks = Array( "perks" );
-	// Use Spawn Ent
-	// Determine model
-	// Set model
-	// trigger thread
-}
-
-function create_weapon()
-{
-	weapons = Array( "ar_standard", "smg_capacity", "lmg_light", "shotgun_precision", "sniper_powerbolt", "pistol_shotgun" );
-	weapon = GetWeapon( m_array::randomized_selection( weapons ) );
-	
-	self.s_model = Spawn( "script_model", self.origin + (0,0,32) );
-	self.s_model UseWeaponModel( weapon, weapon.worldModel );
-	self.s_model SetHighDetail( true );
-	self.s_model set_bob_item();
-	self.s_model set_rotate_item();
-	self.respawn_time = 5;
-
-	self thread spawn_item_watcher( weapon ); 
-}
-
-function create_base_fx( fx )
-{
-	if ( isdefined( self.base.fx ) )
-		self.base.fx Delete();
-
-	self.base.fx = SpawnFX( fx, self.origin );
-	TriggerFX( self.base.fx, 0.001 );
+	self.model PlaySound( "mod_oldschool_return" );
 }
 
 function set_bob_item()
