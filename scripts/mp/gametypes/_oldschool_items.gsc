@@ -1,19 +1,9 @@
-#using scripts\codescripts\struct;
 #using scripts\shared\array_shared;
 #using scripts\shared\callbacks_shared;
 #using scripts\shared\gameobjects_shared;
 #using scripts\shared\hud_util_shared;
 #using scripts\shared\math_shared;
-#using scripts\shared\persistence_shared;
-#using scripts\shared\rank_shared;
-#using scripts\shared\system_shared;
 #using scripts\shared\util_shared;
-
-#using scripts\mp\gametypes\_globallogic;
-#using scripts\mp\gametypes\_globallogic_audio;
-#using scripts\mp\gametypes\_globallogic_score;
-#using scripts\mp\gametypes\_loadout;
-
 // T7ScriptSuite
 #using scripts\m_shared\array_shared;
 
@@ -177,7 +167,7 @@ function on_use_weapon( player )
 		// weapons have 135 camos, 41 reflex, 41 acog, 34 ir, 41 dualoptic possibilies
 		options = player CalcWeaponOptions( RandomInt( 135 ), 0, 0, false, false, false, false );
 
-		player TakeWeapon( player take_weapon() );
+		player TakeWeapon( m_array::get_next_in_array( self GetWeaponsList( true ), self GetCurrentWeapon() ) );
 		player GiveWeapon( item, options );
 		player GiveStartAmmo( item );
 
@@ -275,12 +265,10 @@ function spawn_base_fx( fx )
 	TriggerFX( self.fx, 0.001 );
 }
 
-function spawn_items_go( a_spawn_points )
+function spawn_items( a_spawn_points )
 {
 	foreach( point in a_spawn_points )
-	{
 		point.obj = point spawn_item_object();
-	}
 }
 
 // ***************************
@@ -373,17 +361,6 @@ function select_weapon()
 // ***************************
 // Utility Code
 // ***************************
-
-function take_weapon()
-{
-	weapons = self GetWeaponsListPrimaries();
-
-	foreach( weapon in weapons )
-	{
-		if ( !weapon.isgadget )
-			return weapon;
-	}
-}
 
 function take_player_gadgets()
 {

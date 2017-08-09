@@ -1,17 +1,4 @@
-#using scripts\codescripts\struct;
-#using scripts\shared\array_shared;
 #using scripts\shared\callbacks_shared;
-#using scripts\shared\hud_util_shared;
-#using scripts\shared\math_shared;
-#using scripts\shared\persistence_shared;
-#using scripts\shared\rank_shared;
-#using scripts\shared\system_shared;
-#using scripts\shared\util_shared;
-
-#using scripts\mp\gametypes\_globallogic;
-#using scripts\mp\gametypes\_globallogic_audio;
-#using scripts\mp\gametypes\_globallogic_score;
-#using scripts\mp\gametypes\_loadout;
 
 #using scripts\mp\gametypes\_oldschool_items;
 #using scripts\mp\gametypes\_oldschool_points;
@@ -27,7 +14,6 @@ function autoexec init()
 		return;
 	/#
 	level.dev_points = [];
-	level.dev_points_type = "boost";
 	#/
 	level.giveCustomLoadout = &give_custom_loadout;
 
@@ -48,7 +34,7 @@ function autoexec init()
 
 function start_gametype()
 {
-	oldschool_items::spawn_items_go( oldschool_points::get_spawn_points() );
+	oldschool_items::spawn_items( oldschool_points::get_spawn_points() );
 }
 
 function on_player_connect()

@@ -1,17 +1,4 @@
-#using scripts\codescripts\struct;
 #using scripts\shared\array_shared;
-#using scripts\shared\callbacks_shared;
-#using scripts\shared\hud_util_shared;
-#using scripts\shared\persistence_shared;
-#using scripts\shared\rank_shared;
-#using scripts\shared\system_shared;
-
-#using scripts\mp\gametypes\_globallogic;
-#using scripts\mp\gametypes\_globallogic_audio;
-#using scripts\mp\gametypes\_globallogic_score;
-#using scripts\mp\gametypes\_loadout;
-
-#using scripts\mp\gametypes\_oldschool;
 
 // T7ScriptSuite
 #using scripts\m_shared\array_shared;
@@ -111,6 +98,10 @@ function remove_point()
 function cycle_point()
 {
 	types = Array( "boost", "equipment", "health", "perk", "weapon" );
+
+	if ( !isdefined( level.dev_points_type ) )
+		level.dev_points_type = "boost";
+
 	level.dev_points_type = m_array::get_next_in_array( types, level.dev_points_type );
 	IPrintLn( "Now placing type: " + level.dev_points_type );
 }
