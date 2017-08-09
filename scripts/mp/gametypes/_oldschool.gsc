@@ -31,11 +31,6 @@ function autoexec init()
 	#/
 	level.giveCustomLoadout = &give_custom_loadout;
 
-	level._effect[ "flag_base" ] = FX_FLAG_BASE;
-	level._effect[ "flag_base_green" ] = FX_FLAG_BASE_GREEN;
-	level._effect[ "flag_base_red" ] = FX_FLAG_BASE_RED;
-	level._effect[ "flag_base_yellow" ] = FX_FLAG_BASE_YELLOW;
-
 	level.os_random_spawn = GetDvarInt( "oldschool_random_spawn", 0 );
 
 	callback::on_connect( &on_player_connect ); // force teams on connecting
@@ -44,11 +39,11 @@ function autoexec init()
 
 	SetJumpHeight( 64 ); // stock is 39?
 
-	level oldschool_items::register( "boost", &oldschool_items::select_boost, &oldschool_items::on_use_boost );
-	level oldschool_items::register( "equipment", &oldschool_items::select_equipment, &oldschool_items::on_use_equipment );
-	level oldschool_items::register( "health", &oldschool_items::select_health, &oldschool_items::on_use_health );
-	level oldschool_items::register( "perk", &oldschool_items::select_perk, &oldschool_items::on_use_perk );
-	level oldschool_items::register( "weapon", &oldschool_items::select_weapon, &oldschool_items::on_use_weapon );
+	level oldschool_items::register( "boost", &oldschool_items::select_boost, &oldschool_items::on_use_boost, RandomIntRange( 1, 5 ) );
+	level oldschool_items::register( "equipment", &oldschool_items::select_equipment, &oldschool_items::on_use_equipment, 5 );
+	level oldschool_items::register( "health", &oldschool_items::select_health, &oldschool_items::on_use_health, 5 );
+	level oldschool_items::register( "perk", &oldschool_items::select_perk, &oldschool_items::on_use_perk, 5 );
+	level oldschool_items::register( "weapon", &oldschool_items::select_weapon, &oldschool_items::on_use_weapon, 5 );
 }
 
 function start_gametype()

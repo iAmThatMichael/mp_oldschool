@@ -30,11 +30,12 @@
 
 #namespace oldschool_items;
 
-function register( name, select, use )
+function register( name, select, use, respawn_time )
 {
 	Assert( isdefined( name ) && IsString( name ), "oldschool_items::register: [name] Not a string" );
 	Assert( isdefined( select ) && IsFunctionPtr( select ), "oldschool_items::register: [select] Not a function" );
-	Assert( isdefined( use ) && IsFunctionPtr( use ), "oldschool_items::register: [us3] Not a function" );
+	Assert( isdefined( use ) && IsFunctionPtr( use ), "oldschool_items::register: [use] Not a function" );
+	Assert( isdefined( respawn_time ) && respawn_time > 0, "oldschool_items::register: [respawn_time] Not a number" );
 
 	if ( !isdefined( level.os_item ) )
 		level.os_item = [];
@@ -43,35 +44,122 @@ function register( name, select, use )
 
 	level.os_item[ name ].select_func = select;
 	level.os_item[ name ].use_func = use;
+	level.os_item[ name ].respawn_time = Int( respawn_time );
 }
 
 // ***************************
 // Item Spawn Code
 // ***************************
 
+function disable_obj()
+{
+	self.base spawn_base_fx( FX_FLAG_BASE_RED );
+	self PlaySound( "mod_oldschool_pickup" );
+
+	self gameobjects::disable_object();
+	self gameobjects::allow_use( "none" );
+	self gameobjects::set_model_visibility( false );
+}
+
+function enable_obj()
+{
+	self.base spawn_base_fx( FX_FLAG_BASE_YELLOW );
+	self PlaySound( "mod_oldschool_return" );
+
+	self gameobjects::enable_object();
+	self gameobjects::allow_use( "any" );
+	self gameobjects::set_model_visibility( true );
+}
+
 function on_use_boost( player )
 {
+	if ( player IsThrowingGrenade() )
+		return;
+
 	player IPrintLnBold( "Hello Boost!" );
+
+	if ( !self gameobjects::is_trigger_enabled() )
+		self thread respawn_obj();
 }
 
 function on_use_equipment( player )
 {
+	if ( player IsThrowingGrenade() )
+		return;
+
 	player IPrintLnBold( "Hello Equipment!" );
+
+	if ( !self gameobjects::is_trigger_enabled() )
+		self thread respawn_obj();
 }
 
 function on_use_health( player )
 {
+	//if ( player IsThrowingGrenade() )
+	//	return;
+
 	player IPrintLnBold( "Hello Health!" );
+
+	if ( !self gameobjects::is_trigger_enabled() )
+		self thread respawn_obj();
 }
 
 function on_use_perk( player )
 {
+	//if ( player IsThrowingGrenade() )
+	//	return;
+
 	player IPrintLnBold( "Hello Perk!" );
+
+	if ( !self gameobjects::is_trigger_enabled() )
+		self thread respawn_obj();
 }
 
 function on_use_weapon( player )
 {
-	player IPrintLnBold( "Hello Weapon!" );
+	if ( player IsThrowingGrenade() )
+		return;
+
+	item = self.selected;
+
+	if ( player UseButtonPressed() && !player HasWeapon( item ) )
+	{
+		// weapons have 135 camos, 41 reflex, 41 acog, 34 ir, 41 dualoptic possibilies
+		options = player CalcWeaponOptions( RandomInt( 135 ), 0, 0, false, false, false, false );
+
+		player TakeWeapon( player take_weapon() );
+		player GiveWeapon( item, options );
+		player GiveStartAmmo( item );
+
+		if ( !player GadgetIsActive( 0 ) )
+			player SwitchToWeapon( item );
+
+		self disable_obj();
+	}
+	// is a weapon, and has the weapon
+	else if ( player HasWeapon( item ) )
+	{
+		stock = player GetWeaponAmmoStock( item );
+		maxAmmo = item.maxAmmo;
+		// has max ammo don't do anything
+		if ( stock == maxAmmo )
+			return;
+
+		count = ( stock + item.clipSize <= maxAmmo ? stock + item.clipSize : maxAmmo );
+		player SetWeaponAmmoStock( item, count );
+
+		self disable_obj();
+	}
+
+	if ( !self gameobjects::is_trigger_enabled() )
+		self thread respawn_obj();
+}
+
+function respawn_obj()
+{
+	wait self.respawn_time;
+
+	self enable_obj();
 }
 
 function spawn_obj_trigger( selected )
@@ -88,20 +176,20 @@ function spawn_item_object()
 {
 	selected = [[ level.os_item[ self.type ].select_func ]]();
 
-	if ( level.os_random_spawn )
-		self.selected = selected;
-
 	trigger = self spawn_obj_trigger( selected );
 	visuals = Array( spawn_item( selected ) );
 
 	obj = gameobjects::create_use_object( "neutral", trigger, visuals, (0,0,0), IString("pickup_item") );
-	obj gameobjects::allow_use( "any" );
 	obj gameobjects::set_use_time( 0 );
 	obj gameobjects::set_visible_team( "any" );
+
+	obj gameobjects::allow_use( "any" );
 	obj gameobjects::set_model_visibility( true );
 
 	obj.onUse = level.os_item[ self.type ].use_func;
 	obj.base = self spawn_base();
+	obj.selected = selected;
+	obj.respawn_time = level.os_item[ self.type ].respawn_time;
 }
 
 
@@ -124,16 +212,17 @@ function spawn_base( offset = (0,0,0) )
 	ent SetModel( MDL_FLAG_BASE );
 	ent SetHighDetail( true );
 
+	ent spawn_base_fx( FX_FLAG_BASE_YELLOW );
 	return ent;
 }
 
 function spawn_base_fx( fx )
 {
-	if ( isdefined( self.base.fx ) )
-		self.base.fx Delete();
+	if ( isdefined( self.fx ) )
+		self.fx Delete();
 
-	self.base.fx = SpawnFX( fx, self.origin );
-	TriggerFX( self.base.fx, 0.001 );
+	self.fx = SpawnFX( fx, self.origin );
+	TriggerFX( self.fx, 0.001 );
 }
 
 function spawn_trigger()

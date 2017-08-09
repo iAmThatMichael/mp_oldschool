@@ -4495,3 +4495,13 @@ function set_pack_icon( shader )
 }
 //=====================================================================================
 
+// TODO: Port to T7ScriptSuite
+function set_visuals_model( model, index )
+{
+	self.visuals[ index ] SetModel( model );
+}
+
+function is_trigger_enabled()
+{
+	return ( self.trigger IsTriggerEnabled() );
+}
