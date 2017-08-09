@@ -48,35 +48,50 @@ function register( name, select, use, respawn_time )
 }
 
 // ***************************
-// Item Spawn Code
+// Item Func Code
 // ***************************
-
-function disable_obj()
-{
-	self.base spawn_base_fx( FX_FLAG_BASE_RED );
-	self PlaySound( "mod_oldschool_pickup" );
-
-	self gameobjects::disable_object();
-	self gameobjects::allow_use( "none" );
-	self gameobjects::set_model_visibility( false );
-}
-
-function enable_obj()
-{
-	self.base spawn_base_fx( FX_FLAG_BASE_YELLOW );
-	self PlaySound( "mod_oldschool_return" );
-
-	self gameobjects::enable_object();
-	self gameobjects::allow_use( "any" );
-	self gameobjects::set_model_visibility( true );
-}
 
 function on_use_boost( player )
 {
 	if ( player IsThrowingGrenade() )
 		return;
 
-	player IPrintLnBold( "Hello Boost!" );
+	item = self.selected;
+
+	// use pressed, is a weapon, and doesn't have the weapon
+	if ( player UseButtonPressed() && IsWeapon( item ) && !player HasWeapon( item ) )
+	{
+		player take_player_gadgets();
+
+		player GiveWeapon( item );
+		slot = player GadgetGetSlot( item );
+		player GadgetPowerSet( slot, 100.0 );
+		player thread take_gadget_watcher( slot, item );
+		self disable_obj();
+	}
+	// is a weapon, and has the weapon
+	else if ( IsWeapon( item ) && player HasWeapon( item ) )
+	{
+		player GiveStartAmmo( item );
+		player GadgetPowerSet( 0, 100.0 );
+		self disable_obj();
+	}
+	// use pressed, isn't a weapon
+	if ( player UseButtonPressed() && !IsWeapon( item ) )
+	{
+		switch( item.type )
+		{
+			case "exo":
+			if ( !player.exo_enabled )
+			{
+				player thread set_exo_for_time( 15 );
+				self disable_obj();
+			}
+				break;
+			default:
+				break;
+		}
+	}
 
 	if ( !self gameobjects::is_trigger_enabled() )
 		self thread respawn_obj();
@@ -87,7 +102,42 @@ function on_use_equipment( player )
 	if ( player IsThrowingGrenade() )
 		return;
 
-	player IPrintLnBold( "Hello Equipment!" );
+	item = self.selected;
+
+	if ( player UseButtonPressed() && !player HasWeapon( item ) )
+	{
+		if ( !isdefined( player.grenadeTypePrimary ) )
+			player.grenadeTypePrimary = item;
+
+		if ( player.grenadeTypePrimary != item )
+		{
+			player TakeWeapon( player.grenadeTypePrimary );
+			player.grenadeTypePrimary = item;
+		}
+
+		player GiveWeapon( item );
+		player SetWeaponAmmoClip( item, 1 );
+		player SwitchToOffHand( item );
+
+		player.grenadeTypePrimaryCount = 1;
+		self disable_obj();
+	}
+	// is a weapon, and has the weapon
+	else if ( player HasWeapon( item ) )
+	{
+		stock = player GetWeaponAmmoStock( item );
+		maxAmmo = item.maxAmmo;
+		// has max ammo don't do anything
+		if ( stock == maxAmmo )
+			return;
+
+		count = 1;
+		player.grenadeTypePrimaryCount = 1;
+
+		player SetWeaponAmmoStock( item, count );
+
+		self disable_obj();
+	}
 
 	if ( !self gameobjects::is_trigger_enabled() )
 		self thread respawn_obj();
@@ -155,12 +205,9 @@ function on_use_weapon( player )
 		self thread respawn_obj();
 }
 
-function respawn_obj()
-{
-	wait self.respawn_time;
-
-	self enable_obj();
-}
+// ***************************
+// Item Spawn Code
+// ***************************
 
 function spawn_obj_trigger( selected )
 {
@@ -192,48 +239,6 @@ function spawn_item_object()
 	obj.respawn_time = level.os_item[ self.type ].respawn_time;
 }
 
-
-function spawn_items_go( a_spawn_points )
-{
-	foreach( point in a_spawn_points )
-	{
-		point.obj = point spawn_item_object();
-	}
-}
-
-// ***************************
-// Spawn Code
-// ***************************
-
-function spawn_base( offset = (0,0,0) )
-{
-	// spawn model although raised
-	ent = Spawn( "script_model", self.origin + offset );
-	ent SetModel( MDL_FLAG_BASE );
-	ent SetHighDetail( true );
-
-	ent spawn_base_fx( FX_FLAG_BASE_YELLOW );
-	return ent;
-}
-
-function spawn_base_fx( fx )
-{
-	if ( isdefined( self.fx ) )
-		self.fx Delete();
-
-	self.fx = SpawnFX( fx, self.origin );
-	TriggerFX( self.fx, 0.001 );
-}
-
-function spawn_trigger()
-{
-	trigger = Spawn( "trigger_radius", self.base.origin + (0,0,32), 0, 64, 32 );
-	trigger SetCursorHint( "HINT_NOICON" );
-	trigger TriggerIgnoreTeam();
-
-	return trigger;
-}
-
 function spawn_item( selected )
 {
 	model = Spawn( "script_model", self.origin + (0,0,32) );
@@ -251,126 +256,62 @@ function spawn_item( selected )
 	return model;
 }
 
-// ***************************
-// Item Pickup Code
-// ***************************
-
-// TODO: convert to gameobjects
-function spawned_item_pickup( item )
+function spawn_base( offset = (0,0,0) )
 {
-	self spawn_base_fx( level._effect[ "flag_base_green" ] );
+	ent = Spawn( "script_model", self.origin + offset );
+	ent SetModel( MDL_FLAG_BASE );
+	ent SetHighDetail( true );
 
-	self.model Show();
-	self.trigger = spawn_trigger();
-	self.trigger SetHintString( &"MOD_PICK_UP_ITEM", IString( item.displayname ) );
+	ent spawn_base_fx( FX_FLAG_BASE_YELLOW );
+	return ent;
+}
 
-	self.model PlaySound( "mod_oldschool_return" );
+function spawn_base_fx( fx )
+{
+	if ( isdefined( self.fx ) )
+		self.fx Delete();
 
-	while( isdefined( self.trigger ) )
+	self.fx = SpawnFX( fx, self.origin );
+	TriggerFX( self.fx, 0.001 );
+}
+
+function spawn_items_go( a_spawn_points )
+{
+	foreach( point in a_spawn_points )
 	{
-		self.trigger waittill( "trigger", player );
-
-		if ( !IsPlayer( player ) || player IsThrowingGrenade() )
-			continue;
-		// use pressed, is a weapon, and doesn't have the weapon
-		if ( player UseButtonPressed() && IsWeapon( item ) && !player HasWeapon( item ) )
-		{
-			if ( item.inventoryType != "offhand" ) // normal weapon, anything not a grenade
-			{
-				// weapons have 135 camos, 41 reflex, 41 acog, 34 ir, 41 dualoptic possibilies
-				options = player CalcWeaponOptions( RandomInt( 135 ), 0, 0, false, false, false, false );
-				if ( !item.isHeroWeapon )
-				{
-					player TakeWeapon( player take_weapon() );
-					player GiveWeapon( item, options );
-					player GiveStartAmmo( item );
-					if ( !player GadgetIsActive( 0 ) )
-						player SwitchToWeapon( item );
-				}
-				else
-				{
-					player take_player_gadgets();
-
-					player GiveWeapon( item, options );
-					slot = player GadgetGetSlot( item );
-					player GadgetPowerSet( slot, 100.0 );
-					player thread take_gadget_watcher( slot, item );
-				}
-				self.trigger Delete();
-			}
-			else // grenades
-			{
-				if ( !isdefined( player.grenadeTypePrimary ) )
-					player.grenadeTypePrimary = item;
-
-				if ( player.grenadeTypePrimary != item )
-				{
-					player TakeWeapon( player.grenadeTypePrimary );
-					player.grenadeTypePrimary = item;
-				}
-
-				player GiveWeapon( item );
-				player SetWeaponAmmoClip( item, 1 );
-				player SwitchToOffHand( item );
-
-				player.grenadeTypePrimaryCount = 1;
-				self.trigger Delete();
-			}
-		}
-		// is a weapon, and has the weapon
-		else if ( IsWeapon( item ) && player HasWeapon( item ) )
-		{
-			if ( !item.isHeroWeapon )
-			{
-				stock = player GetWeaponAmmoStock( item );
-				maxAmmo = item.maxAmmo;
-				// has max ammo don't do anything
-				if ( stock == maxAmmo )
-					continue;
-				// if normal weapon, get proper ammo count
-				if ( item.inventoryType != "offhand" )
-					count = ( stock + item.clipSize <= maxAmmo ? stock + item.clipSize : maxAmmo );
-				// if is grenade just return only 1 for ammo
-				else
-				{
-					count = 1;
-					player.grenadeTypePrimaryCount = count;
-				}
-
-				player SetWeaponAmmoStock( item, count );
-			}
-			else
-			{
-				self GiveStartAmmo( item );
-				self GadgetPowerSet( 0, 100.0 );
-			}
-			self.trigger Delete();
-		}
-
-		if ( player UseButtonPressed() && !IsWeapon( item ) ) // boost stuff
-		{
-			switch( item.type )
-			{
-				case "exo":
-				if ( !player.exo_enabled )
-				{
-					player thread set_exo_for_time( 15 );
-					self.trigger Delete();
-				}
-					break;
-				default:
-					break;
-			}
-		}
+		point.obj = point spawn_item_object();
 	}
+}
 
-	self.model PlaySound( "mod_oldschool_pickup" );
+// ***************************
+// Obj Code
+// ***************************
 
-	self.model Delete();
+function disable_obj()
+{
+	self.base spawn_base_fx( FX_FLAG_BASE_RED );
+	self PlaySound( "mod_oldschool_pickup" );
 
-	wait( self.respawn_time );
+	self gameobjects::disable_object();
+	self gameobjects::allow_use( "none" );
+	self gameobjects::set_model_visibility( false );
+}
 
-	self thread [[self.create_func]]();
+function enable_obj()
+{
+	self.base spawn_base_fx( FX_FLAG_BASE_YELLOW );
+	self PlaySound( "mod_oldschool_return" );
+
+	self gameobjects::enable_object();
+	self gameobjects::allow_use( "any" );
+	self gameobjects::set_model_visibility( true );
+}
+
+function respawn_obj()
+{
+	wait self.respawn_time;
+
+	self enable_obj();
 }
 
 // ***************************
@@ -485,7 +426,6 @@ function take_gadget_watcher( slot, weapon )
 	}
 }
 
-
 // ***************************
 // Model Code
 // ***************************
@@ -499,7 +439,6 @@ function set_rotate_item()
 {
 	self Rotate( (0,PICKUP_ROTATE_RATE,0) );
 }
-
 
 // ***************************
 // Other Code
