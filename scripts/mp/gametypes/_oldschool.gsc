@@ -43,6 +43,12 @@ function autoexec init()
 	callback::on_start_gametype( &start_gametype );
 
 	SetJumpHeight( 64 ); // stock is 39?
+
+	level oldschool_items::register( "boost", &oldschool_items::select_boost, &oldschool_items::on_use_boost );
+	level oldschool_items::register( "equipment", &oldschool_items::select_equipment, &oldschool_items::on_use_equipment );
+	level oldschool_items::register( "health", &oldschool_items::select_health, &oldschool_items::on_use_health );
+	level oldschool_items::register( "perk", &oldschool_items::select_perk, &oldschool_items::on_use_perk );
+	level oldschool_items::register( "weapon", &oldschool_items::select_weapon, &oldschool_items::on_use_weapon );
 }
 
 function start_gametype()

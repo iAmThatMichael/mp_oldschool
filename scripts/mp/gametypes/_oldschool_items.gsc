@@ -30,38 +30,48 @@
 
 #namespace oldschool_items;
 
+function register( name, select, use )
+{
+	Assert( isdefined( name ) && IsString( name ), "oldschool_items::register: [name] Not a string" );
+	Assert( isdefined( select ) && IsFunctionPtr( select ), "oldschool_items::register: [select] Not a function" );
+	Assert( isdefined( use ) && IsFunctionPtr( use ), "oldschool_items::register: [us3] Not a function" );
+
+	if ( !isdefined( level.os_item ) )
+		level.os_item = [];
+
+	level.os_item[ name ] = SpawnStruct();
+
+	level.os_item[ name ].select_func = select;
+	level.os_item[ name ].use_func = use;
+}
+
 // ***************************
 // Item Spawn Code
 // ***************************
 
-function onUse( player )
+function on_use_boost( player )
 {
-	player IPrintLnBold( "Hello World!" );
+	player IPrintLnBold( "Hello Boost!" );
 }
 
-function get_item()
+function on_use_equipment( player )
 {
-	switch( self.type )
-	{
-		case "boost":
-			return select_boost();
-			break;
-		case "equipment":
-			return select_equipment();
-			break;
-		case "health":
-			return select_health();
-			break;
-		case "perk":
-			return select_perk();
-			break;
-		case "weapon":
-			return select_weapon();
-			break;
-		default: // should really never get this but whatever
-			AssertMsg( "Unknown spawn item type " + self.type );
-			break;
-	}
+	player IPrintLnBold( "Hello Equipment!" );
+}
+
+function on_use_health( player )
+{
+	player IPrintLnBold( "Hello Health!" );
+}
+
+function on_use_perk( player )
+{
+	player IPrintLnBold( "Hello Perk!" );
+}
+
+function on_use_weapon( player )
+{
+	player IPrintLnBold( "Hello Weapon!" );
 }
 
 function spawn_obj_trigger( selected )
@@ -76,7 +86,10 @@ function spawn_obj_trigger( selected )
 // self == point
 function spawn_item_object()
 {
-	selected = self get_item();
+	selected = [[ level.os_item[ self.type ].select_func ]]();
+
+	if ( level.os_random_spawn )
+		self.selected = selected;
 
 	trigger = self spawn_obj_trigger( selected );
 	visuals = Array( spawn_item( selected ) );
@@ -86,12 +99,8 @@ function spawn_item_object()
 	obj gameobjects::set_use_time( 0 );
 	obj gameobjects::set_visible_team( "any" );
 	obj gameobjects::set_model_visibility( true );
-	obj.onUse = &onUse;
-	// needs to be the same material.
-	//obj gameobjects::set_2d_icon( "friendly", "compass_waypoint_defend" + label );
-	//obj gameobjects::set_2d_icon( "enemy", "compass_waypoint_target" + label );
 
-
+	obj.onUse = level.os_item[ self.type ].use_func;
 	obj.base = self spawn_base();
 }
 
