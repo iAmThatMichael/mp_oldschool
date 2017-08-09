@@ -25,7 +25,7 @@ function get_spawn_points()
 {
 	a_spawn_points = [];
 
-	switch( level.script )
+	switch( GetDvarString( "mapname" ) )
 	{
 		case "mp_sector":
 			ARRAY_ADD( a_spawn_points, create_spawn( "weapon", (631.194, -289.895, 146.125) ) );

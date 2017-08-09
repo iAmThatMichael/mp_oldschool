@@ -68,9 +68,9 @@ function spawn_obj_trigger( selected )
 {
 	trigger = Spawn( "trigger_radius", self.origin + (0,0,32), 0, 64, 32 );
 	trigger SetCursorHint( "HINT_NOICON" );
+	trigger SetHintString( &"MOD_PICK_UP_ITEM", IString( selected.displayname ) );
 	trigger TriggerIgnoreTeam();
 
-	trigger SetHintString( &"MOD_PICK_UP_ITEM", IString( selected.displayname ) );
 	return trigger;
 }
 // self == point
@@ -85,6 +85,7 @@ function spawn_item_object()
 	obj gameobjects::allow_use( "any" );
 	obj gameobjects::set_use_time( 0 );
 	obj gameobjects::set_visible_team( "any" );
+	obj gameobjects::set_model_visibility( true );
 	obj.onUse = &onUse;
 	// needs to be the same material.
 	//obj gameobjects::set_2d_icon( "friendly", "compass_waypoint_defend" + label );
@@ -101,101 +102,6 @@ function spawn_items_go( a_spawn_points )
 	{
 		point.obj = point spawn_item_object();
 	}
-}
-
-function spawn_items( a_spawn_points )
-{
-	foreach ( point in a_spawn_points )
-	{
-		point.base = point spawn_base();
-
-		switch( point.type )
-		{
-			case "boost":
-				point.create_func = &create_boost;
-				point thread [[point.create_func]](); // only one requiring thread due to internal wait
-				break;
-			case "equipment":
-				point.create_func = &create_equipment;
-				point [[point.create_func]]();
-				break;
-			case "health":
-				point.create_func = &create_health;
-				point [[point.create_func]]();
-				break;
-			case "perk":
-				point.create_func = &create_perk;
-				point [[point.create_func]]();
-				break;
-			case "weapon":
-				point.create_func = &create_weapon;
-				point [[point.create_func]]();
-				break;
-			default: // should really never get this but whatever
-				AssertMsg( "Unknown spawn item type " + point.type );
-				break;
-		}
-	}
-}
-
-// ***************************
-// Create Code
-// ***************************
-
-function create_boost()
-{
-	selected = select_boost();
-
-	self.model = spawn_item( selected );
-
-	self.respawn_time = RandomIntRange( 1, 5 );
-
-	wait( self.respawn_time ); // wait first spawn of around 10-60 seconds
-
-	self thread spawned_item_pickup( selected );
-}
-// Equipment Code
-function create_equipment()
-{
-	selected = select_equipment();
-
-	self.model = spawn_item( selected );
-
-	self.respawn_time = 5;
-
-	self thread spawned_item_pickup( selected );
-}
-// Health Code
-// Unsure if I want to add this....
-function create_health()
-{
-	selected = select_health();
-
-	self.model = spawn_item( selected );
-
-	self.respawn_time = 5;
-
-	self thread spawned_item_pickup( selected );
-}
-
-function create_perk()
-{
-	perks = Array( "perks" );
-	// Use Spawn Ent
-	// Determine model
-	// Set model
-	// trigger thread
-}
-
-function create_weapon()
-{
-	selected = select_weapon();
-
-	self.model = spawn_item( selected );
-
-	self.respawn_time = 5;
-
-	self thread spawned_item_pickup( selected );
 }
 
 // ***************************
