@@ -3,13 +3,13 @@
 
 #include "mp_mod.class"
 
-rawfile,gamedata\gamesettings\mp\gamesettings_dm.cfg
-rawfile,gamedata\gamesettings\mp\gamesettings_tdm.cfg
+rawfile,gamedata/gamesettings/mp/gamesettings_dm.cfg
+rawfile,gamedata/gamesettings/mp/gamesettings_tdm.cfg
 
-scriptparsetree,scripts\mp\gametypes\_oldschool.gsc
-scriptparsetree,scripts\mp\gametypes\_oldschool_items.gsc
-scriptparsetree,scripts\mp\gametypes\_oldschool_points.gsc
-scriptparsetree,scripts\mp\_load.gsc
+scriptparsetree,scripts/mp/gametypes/_oldschool.gsc
+scriptparsetree,scripts/mp/gametypes/_oldschool_items.gsc
+scriptparsetree,scripts/mp/gametypes/_oldschool_points.gsc
+scriptparsetree,scripts/mp/_load.gsc
 
 // T7ScriptSuite scripts
 scriptparsetree,scripts/m_shared/array_shared.gsc
@@ -20,6 +20,7 @@ scriptparsetree,scripts/m_shared/trigger_shared.gsc
 scriptparsetree,scripts/m_shared/util_shared.gsc
 
 scriptparsetree,scripts/shared/weapons/_weaponobjects.gsc
+scriptparsetree,scripts/shared/gameobjects_shared.gsc
 
 localize,mod
 

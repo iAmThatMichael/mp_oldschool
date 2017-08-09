@@ -1,6 +1,7 @@
 #using scripts\codescripts\struct;
 #using scripts\shared\array_shared;
 #using scripts\shared\callbacks_shared;
+#using scripts\shared\gameobjects_shared;
 #using scripts\shared\hud_util_shared;
 #using scripts\shared\math_shared;
 #using scripts\shared\persistence_shared;
@@ -24,6 +25,7 @@
 #precache( "fx", FX_FLAG_BASE_RED );
 #precache( "fx", FX_FLAG_BASE_YELLOW );
 #precache( "xmodel", MDL_FLAG_BASE );
+#precache( "objective", "pickup_item" );
 #precache( "string", "MOD_PICK_UP_ITEM" );
 
 #namespace oldschool_items;
@@ -31,6 +33,75 @@
 // ***************************
 // Item Spawn Code
 // ***************************
+
+function onUse( player )
+{
+	player IPrintLnBold( "Hello World!" );
+}
+
+function get_item()
+{
+	switch( self.type )
+	{
+		case "boost":
+			return select_boost();
+			break;
+		case "equipment":
+			return select_equipment();
+			break;
+		case "health":
+			return select_health();
+			break;
+		case "perk":
+			return select_perk();
+			break;
+		case "weapon":
+			return select_weapon();
+			break;
+		default: // should really never get this but whatever
+			AssertMsg( "Unknown spawn item type " + self.type );
+			break;
+	}
+}
+
+function spawn_obj_trigger( selected )
+{
+	trigger = Spawn( "trigger_radius", self.origin + (0,0,32), 0, 64, 32 );
+	trigger SetCursorHint( "HINT_NOICON" );
+	trigger TriggerIgnoreTeam();
+
+	trigger SetHintString( &"MOD_PICK_UP_ITEM", IString( selected.displayname ) );
+	return trigger;
+}
+// self == point
+function spawn_item_object()
+{
+	selected = self get_item();
+
+	trigger = self spawn_obj_trigger( selected );
+	visuals = Array( spawn_item( selected ) );
+
+	obj = gameobjects::create_use_object( "neutral", trigger, visuals, (0,0,0), IString("pickup_item") );
+	obj gameobjects::allow_use( "any" );
+	obj gameobjects::set_use_time( 0 );
+	obj gameobjects::set_visible_team( "any" );
+	obj.onUse = &onUse;
+	// needs to be the same material.
+	//obj gameobjects::set_2d_icon( "friendly", "compass_waypoint_defend" + label );
+	//obj gameobjects::set_2d_icon( "enemy", "compass_waypoint_target" + label );
+
+
+	obj.base = self spawn_base();
+}
+
+
+function spawn_items_go( a_spawn_points )
+{
+	foreach( point in a_spawn_points )
+	{
+		point.obj = point spawn_item_object();
+	}
+}
 
 function spawn_items( a_spawn_points )
 {
@@ -66,7 +137,6 @@ function spawn_items( a_spawn_points )
 		}
 	}
 }
-
 
 // ***************************
 // Create Code
@@ -132,9 +202,10 @@ function create_weapon()
 // Spawn Code
 // ***************************
 
-function spawn_base()
+function spawn_base( offset = (0,0,0) )
 {
-	ent = Spawn( "script_model", self.origin );
+	// spawn model although raised
+	ent = Spawn( "script_model", self.origin + offset );
 	ent SetModel( MDL_FLAG_BASE );
 	ent SetHighDetail( true );
 

@@ -36,6 +36,8 @@ function autoexec init()
 	level._effect[ "flag_base_red" ] = FX_FLAG_BASE_RED;
 	level._effect[ "flag_base_yellow" ] = FX_FLAG_BASE_YELLOW;
 
+	level.os_random_spawn = GetDvarInt( "oldschool_random_spawn", 0 );
+
 	callback::on_connect( &on_player_connect ); // force teams on connecting
 	callback::on_spawned( &on_player_spawned ); // extra code on spawning
 	callback::on_start_gametype( &start_gametype );
@@ -45,7 +47,7 @@ function autoexec init()
 
 function start_gametype()
 {
-	oldschool_items::spawn_items( oldschool_points::get_spawn_points() );
+	oldschool_items::spawn_items_go( oldschool_points::get_spawn_points() );
 }
 
 function on_player_connect()
