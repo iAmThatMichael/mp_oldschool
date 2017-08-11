@@ -362,6 +362,7 @@ function select_weapon()
 // Utility Code
 // ***************************
 
+
 function take_player_gadgets()
 {
 	weapons = self GetWeaponsList( true );
@@ -403,24 +404,6 @@ function take_gadget_watcher( slot, weapon )
 	}
 }
 
-// ***************************
-// Model Code
-// ***************************
-
-function set_bob_item()
-{
-	self Bobbing( (0,0,1), PICKUP_BOB_DISTANCE, 1 );
-}
-
-function set_rotate_item()
-{
-	self Rotate( (0,PICKUP_ROTATE_RATE,0) );
-}
-
-// ***************************
-// Other Code
-// ***************************
-
 function set_exo_for_time( time )
 {
 	self endon( "death" );
@@ -433,4 +416,14 @@ function set_exo_for_time( time )
 
 	self.exo_enabled = false;
 	self AllowDoubleJump( false );
+}
+
+function set_bob_item()
+{
+	self Bobbing( (0,0,1), PICKUP_BOB_DISTANCE, 1 );
+}
+
+function set_rotate_item()
+{
+	self Rotate( (0,PICKUP_ROTATE_RATE,0) );
 }

@@ -12,9 +12,7 @@ function autoexec init()
 {
 	if ( !IsInArray( Array( "tdm", "dm" ), ToLower( GetDvarString( "g_gametype" ) ) ) )
 		return;
-	/#
-	level.dev_points = [];
-	#/
+
 	level.giveCustomLoadout = &give_custom_loadout;
 
 	level.os_random_spawn = GetDvarInt( "oldschool_random_spawn", 0 );

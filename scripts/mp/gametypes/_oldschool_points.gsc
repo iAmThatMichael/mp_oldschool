@@ -85,29 +85,32 @@ function debug_commands()
 
 function add_point()
 {
-	obj = create_spawn( level.dev_points_type, self.origin );
-	ARRAY_ADD( level.dev_points, obj );
+	obj = create_spawn( self.dev_points_type, self.origin );
+	ARRAY_ADD( self.dev_points, obj );
 	IPrintLn( "Adding Type: " + obj.type + " at " + obj.origin );
 }
 
 function remove_point()
 {
-	array::pop( level.dev_points );
+	array::pop( self.dev_points );
 }
 
 function cycle_point()
 {
 	types = Array( "boost", "equipment", "health", "perk", "weapon" );
 
-	if ( !isdefined( level.dev_points_type ) )
-		level.dev_points_type = "boost";
+	if ( !isdefined( self.dev_points ) )
+	{
+		self.dev_points = [];
+		self.dev_points_type = "boost";
+	}
 
-	level.dev_points_type = m_array::get_next_in_array( types, level.dev_points_type );
-	IPrintLn( "Now placing type: " + level.dev_points_type );
+	self.dev_points_type = m_array::get_next_in_array( types, self.dev_points_type );
+	IPrintLn( "Now placing type: " + self.dev_points_type );
 }
 
 function print_points()
 {
-	foreach( point in level.dev_points )
+	foreach( point in self.dev_points )
 		IPrintLn( "ARRAY_ADD( a_spawn_points, create_spawn( REP" + point.type + "REP, " + point.origin + " ) );" ); // T7 can't do \" escape sequence.
 }
