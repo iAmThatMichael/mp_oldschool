@@ -15,8 +15,6 @@ function autoexec init()
 
 	level.giveCustomLoadout = &give_custom_loadout;
 
-	level.os_random_spawn = GetDvarInt( "oldschool_random_spawn", 0 );
-
 	callback::on_connect( &on_player_connect ); // force teams on connecting
 	callback::on_spawned( &on_player_spawned ); // extra code on spawning
 	callback::on_start_gametype( &start_gametype );

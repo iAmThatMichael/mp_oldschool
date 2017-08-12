@@ -18,6 +18,10 @@
 #precache( "objective", "pickup_item" );
 #precache( "string", "MOD_PICK_UP_ITEM" );
 
+#precache( "material", "mc/mtl_p7_perk_t7_hud_perk_flakjacket_image" );
+#precache( "material", "mc/mtl_p7_perk_t7_hud_perk_toughness_image" );
+#precache( "material", "mc/mtl_p7_perk_t7_hud_perk_fasthands_image" );
+
 #namespace oldschool_items;
 
 function register( name, select, use, respawn_time )
@@ -31,7 +35,6 @@ function register( name, select, use, respawn_time )
 		level.os_item = [];
 
 	level.os_item[ name ] = SpawnStruct();
-
 	level.os_item[ name ].select_func = select;
 	level.os_item[ name ].use_func = use;
 	level.os_item[ name ].respawn_time = Int( respawn_time );
@@ -149,7 +152,28 @@ function on_use_perk( player )
 	//if ( player IsThrowingGrenade() )
 	//	return;
 
-	player IPrintLnBold( "Hello Perk!" );
+	item = self.selected;
+	perks = [];
+	perks = StrTok( item.specialty, "|" );
+
+	if ( player UseButtonPressed() && !player HasPerk( perks[0] ) )
+	{
+		player thread create_perk_hud( item );
+
+		if ( perks.size > 1 )
+		{
+			foreach ( perk in perks )
+				player SetPerk( perk );
+
+			self disable_obj();
+		}
+		else
+		{
+			player SetPerk( perks[0] );
+
+			self disable_obj();
+		}
+	}
 
 	if ( !self gameobjects::is_trigger_enabled() )
 		self thread respawn_obj();
@@ -164,14 +188,16 @@ function on_use_weapon( player )
 
 	if ( player UseButtonPressed() && !player HasWeapon( item ) )
 	{
-		// weapons have 135 camos, 41 reflex, 41 acog, 34 ir, 41 dualoptic possibilies
-		options = player CalcWeaponOptions( RandomInt( 135 ), 0, 0, false, false, false, false );
+		// gamedata\weapoons\common\attachmentTable.csv
+		// weapons have 135 camos, 41 reflex, 41 acog, 34 ir, 41 dualoptic posibilities
+		// ignore the CoDCWL camos because they're really ugly.
+		options = player CalcWeaponOptions( ( math::cointoss() ? RandomIntRange( 0, 89 ) : RandomIntRange( 118, 135 ) ), 0, 0, false, false, false, false );
 
-		player TakeWeapon( m_array::get_next_in_array( self GetWeaponsList( true ), self GetCurrentWeapon() ) );
+		player take_next_weapon();
 		player GiveWeapon( item, options );
 		player GiveStartAmmo( item );
 
-		if ( !player GadgetIsActive( 0 ) )
+		if ( !player has_active_gadget() )
 			player SwitchToWeapon( item );
 
 		self disable_obj();
@@ -344,15 +370,44 @@ function select_health()
 
 function select_perk()
 {
-	perks = Array( "perks" );
+	perks = Array( "flakjacket", "fasthands", "toughness" );
 	selected = m_array::randomized_selection( perks );
+	// TODO: replace by tablelookup modular code
+	switch( selected )
+	{
+		case "flakjacket":
+			selected = SpawnStruct();
+			selected.displayname = "PERKS_FLAK_JACKET";
+			selected.worldModel= "p7_perk_t7_hud_perk_flakjacket";
+			selected.specialty = "specialty_flakjacket";
+			selected.shader = "mc/mtl_p7_perk_t7_hud_perk_flakjacket_image";
+			break;
+
+		case "fasthands":
+			selected = SpawnStruct();
+			selected.displayname = "PERKS_FAST_HANDS";
+			selected.worldModel= "p7_perk_t7_hud_perk_fasthands";
+			selected.specialty = "specialty_fastweaponswitch|specialty_sprintrecovery|specialty_sprintfirerecovery";
+			selected.shader = "mc/mtl_p7_perk_t7_hud_perk_fasthands_image";
+			break;
+
+		case "toughness":
+			selected = SpawnStruct();
+			selected.displayname = "PERKS_TOUGHNESS";
+			selected.worldModel= "p7_perk_t7_hud_perk_toughness";
+			selected.specialty = "specialty_bulletflinch";
+			selected.shader = "mc/mtl_p7_perk_t7_hud_perk_toughness_image";
+			break;
+	}
 
 	return selected;
 }
 
 function select_weapon()
 {
-	weapons = Array( "ar_standard", "smg_capacity", "lmg_light", "shotgun_precision", "sniper_powerbolt", "pistol_shotgun" );
+	// TODO: determine if DLC weaopns to be added
+	// could cointoss() a DLC weapon
+	weapons = Array( "ar_standard", "smg_capacity", "lmg_light", "shotgun_precision", "sniper_powerbolt", "pistol_shotgun", "launcher_standard" );
 	selected = GetWeapon( m_array::randomized_selection( weapons ) );
 
 	return selected;
@@ -362,6 +417,16 @@ function select_weapon()
 // Utility Code
 // ***************************
 
+function take_next_weapon()
+{
+	weapons = self GetWeaponsList( true );
+	weapon = self GetCurrentWeapon();
+
+	if ( weapon.isheroweapon || weapon.isgadget )
+		weapon = m_array::get_next_in_array( weapons, weapon );
+
+	self TakeWeapon( weapon );
+}
 
 function take_player_gadgets()
 {
@@ -426,4 +491,53 @@ function set_bob_item()
 function set_rotate_item()
 {
 	self Rotate( (0,PICKUP_ROTATE_RATE,0) );
+}
+
+function create_perk_hud( item )
+{
+	self endon( "death" );
+	self endon( "disconnect" );
+
+	if ( !isdefined( self.os_perk_hud ) )
+		self.os_perk_hud = [];
+
+	const ICONSIZE = 32;
+	index = self.os_perk_hud.size;
+	ypos = -95 - ( 30 * index );
+	xpos = 30;
+
+	hud = hud::createIcon( item.shader , ICONSIZE, ICONSIZE );
+	hud hud::setPoint( "BOTTOM LEFT", "BOTTOM LEFT", xpos, ypos );
+
+	ARRAY_ADD( self.os_perk_hud, hud );
+
+	self thread destroy_perk_hud( index );
+
+}
+
+function destroy_perk_hud( index )
+{
+	self util::waittill_any_ents( self, "death", self, "disconnect", level, "game_ended" );
+
+	if ( isdefined( self.os_perk_hud[ index ] ) )
+		self.os_perk_hud[ index ] Destroy();
+}
+
+function has_active_gadget()
+{
+	weapons = self GetWeaponsList( true );
+	foreach ( weapon in weapons )
+	{
+		if ( !weapon.isgadget )
+			continue;
+
+		if ( !weapon.isheroweapon && weapon.offhandslot !== "Gadget" )
+			continue;
+
+		slot = self GadgetGetSlot( weapon );
+		if ( self GadgetIsActive( slot ) )
+			return true;
+	}
+
+	return false;
 }
