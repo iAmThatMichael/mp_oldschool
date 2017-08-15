@@ -4,7 +4,6 @@
 #using scripts\shared\hud_util_shared;
 #using scripts\shared\math_shared;
 #using scripts\shared\util_shared;
-// T7ScriptSuite
 #using scripts\m_shared\array_shared;
 
 #insert scripts\shared\shared.gsh;
@@ -405,10 +404,10 @@ function select_perk()
 
 function select_weapon()
 {
-	// TODO: determine if DLC weaopns to be added
-	// could cointoss() a DLC weapon
-	weapons = Array( "ar_standard", "smg_capacity", "lmg_light", "shotgun_precision", "sniper_powerbolt", "pistol_shotgun", "launcher_standard" );
-	selected = GetWeapon( m_array::randomized_selection( weapons ) );
+	weapons = Array( "ar_standard", "smg_capacity", "lmg_light", "shotgun_precision", "sniper_powerbolt", "pistol_burst", "launcher_standard" );
+	dlc_weapons = Array( "ar_galil", "smg_ak74u", "lmg_infinite", "shotgun_energy", "sniper_double", "pistol_shotgun", "special_crossbow" );
+
+	selected = GetWeapon( m_array::randomized_selection( ( math::cointoss() ? weapons: dlc_weapons ) ) );
 
 	return selected;
 }
@@ -416,6 +415,25 @@ function select_weapon()
 // ***************************
 // Utility Code
 // ***************************
+
+function has_active_gadget()
+{
+	weapons = self GetWeaponsList( true );
+	foreach ( weapon in weapons )
+	{
+		if ( !weapon.isgadget )
+			continue;
+
+		if ( !weapon.isheroweapon && weapon.offhandslot !== "Gadget" )
+			continue;
+
+		slot = self GadgetGetSlot( weapon );
+		if ( self GadgetIsActive( slot ) )
+			return true;
+	}
+
+	return false;
+}
 
 function take_next_weapon()
 {
@@ -521,23 +539,4 @@ function destroy_perk_hud( index )
 
 	if ( isdefined( self.os_perk_hud[ index ] ) )
 		self.os_perk_hud[ index ] Destroy();
-}
-
-function has_active_gadget()
-{
-	weapons = self GetWeaponsList( true );
-	foreach ( weapon in weapons )
-	{
-		if ( !weapon.isgadget )
-			continue;
-
-		if ( !weapon.isheroweapon && weapon.offhandslot !== "Gadget" )
-			continue;
-
-		slot = self GadgetGetSlot( weapon );
-		if ( self GadgetIsActive( slot ) )
-			return true;
-	}
-
-	return false;
 }

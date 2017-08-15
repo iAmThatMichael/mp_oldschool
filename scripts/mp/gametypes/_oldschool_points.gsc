@@ -1,7 +1,5 @@
 #using scripts\shared\array_shared;
 #using scripts\shared\hud_util_shared;
-
-// T7ScriptSuite
 #using scripts\m_shared\array_shared;
 
 #insert scripts\shared\shared.gsh;
@@ -41,7 +39,7 @@ function create_spawn( type, origin )
 //	******************************
 //	DEBUG
 //	******************************
-// TODO - Add to HUD
+
 function debug_commands()
 {
 	self endon( "death" );
@@ -115,7 +113,7 @@ function remove_point()
 	{
 		array::pop( self.dev_points );
 
-		if ( isdefined( self.dev_points ) && self.dev_points.size > 0 )
+		if ( self.dev_points.size > 0 )
 		{
 			obj = self.dev_points[ self.dev_points.size - 1];
 			self.dev_hud[ 1 ] SetText( "[{+actionslot 1}]: Remove Last Point: " + obj.type + " " + obj.origin );

@@ -1,5 +1,4 @@
 #using scripts\shared\callbacks_shared;
-
 #using scripts\mp\gametypes\_oldschool_items;
 #using scripts\mp\gametypes\_oldschool_points;
 
@@ -68,8 +67,8 @@ function give_custom_loadout()
 	self TakeAllWeapons();
 	self ClearPerks();
 
-	primary_weapon = GetWeapon( "smg_mp40" ); // TODO
-	secondary_weapon = GetWeapon( "pistol_m1911" ); // TODO
+	primary_weapon = GetWeapon( "smg_capacity" );
+	secondary_weapon = GetWeapon( "pistol_standard" );
 
 	self GiveWeapon( primary_weapon );
 	self GiveWeapon( secondary_weapon );
