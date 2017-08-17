@@ -1,6 +1,7 @@
 #using scripts\shared\array_shared;
 #using scripts\shared\hud_util_shared;
 #using scripts\m_shared\array_shared;
+#using scripts\m_shared\util_shared;
 
 #insert scripts\shared\shared.gsh;
 #insert scripts\mp\gametypes\oldschool.gsh;
@@ -65,38 +66,10 @@ function debug_commands()
 		self.dev_hud[ 3 ] SetText( "[{+actionslot 3}]: Print Points" );
 	}
 
-	while ( true )
-	{
-		// +activate -- ADD POINT
-		if ( self UseButtonPressed() )
-		{
-			self add_point();
-			while ( self UseButtonPressed() )
-				WAIT_SERVER_FRAME;
-		}
-		// +actionslot 1 -- REMOVE POINT
-		else if ( self ActionSlotOneButtonPressed() )
-		{
-			self remove_point();
-			while ( self ActionSlotOneButtonPressed() )
-				WAIT_SERVER_FRAME;
-		}
-		// +actionslot 2 -- CYCLE POINT TYPE
-		else if ( self ActionSlotTwoButtonPressed() )
-		{
-			self cycle_point();
-			while ( self ActionSlotTwoButtonPressed() )
-				WAIT_SERVER_FRAME;
-		}
-		// +actionslot 3 -- PRINT POINTS
-		else if ( self ActionSlotThreeButtonPressed() )
-		{
-			self print_points();
-			while ( self ActionSlotThreeButtonPressed() )
-				WAIT_SERVER_FRAME;
-		}
-		WAIT_SERVER_FRAME;
-	}
+	self thread m_util::button_pressed( &UseButtonPressed, &add_point );
+	self thread m_util::button_pressed( &ActionSlotOneButtonPressed, &remove_point );
+	self thread m_util::button_pressed( &ActionSlotTwoButtonPressed, &cycle_point );
+	self thread m_util::button_pressed( &ActionSlotThreeButtonPressed, &print_points );
 }
 
 function add_point()
