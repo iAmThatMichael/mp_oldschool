@@ -292,8 +292,7 @@ function spawn_base_fx( fx )
 
 function spawn_items( a_spawn_points )
 {
-	foreach( point in a_spawn_points )
-		point.obj = point spawn_item_object();
+	array::thread_all( a_spawn_points, &spawn_item_object );
 }
 
 // ***************************
@@ -405,7 +404,7 @@ function select_perk()
 function select_weapon()
 {
 	weapons = Array( "ar_standard", "smg_capacity", "lmg_light", "shotgun_precision", "sniper_powerbolt", "pistol_burst", "launcher_standard" );
-	dlc_weapons = Array( "ar_galil", "smg_ak74u", "lmg_infinite", "shotgun_energy", "sniper_double", "pistol_shotgun", "special_crossbow" );
+	dlc_weapons = Array( "ar_galil", "smg_ak74u", "lmg_infinite", "shotgun_olympia", "sniper_double", "pistol_shotgun", "special_crossbow" );
 
 	selected = GetWeapon( m_array::randomized_selection( ( math::cointoss() ? weapons: dlc_weapons ) ) );
 
@@ -521,8 +520,8 @@ function create_perk_hud( item )
 
 	const ICONSIZE = 32;
 	index = self.os_perk_hud.size;
-	ypos = -95 - ( 30 * index );
-	xpos = 30;
+	ypos = -30 - ( 30 * index );
+	xpos = 220;
 
 	hud = hud::createIcon( item.shader , ICONSIZE, ICONSIZE );
 	hud hud::setPoint( "BOTTOM LEFT", "BOTTOM LEFT", xpos, ypos );
@@ -538,5 +537,8 @@ function destroy_perk_hud( index )
 	self util::waittill_any_ents( self, "death", self, "disconnect", level, "game_ended" );
 
 	if ( isdefined( self.os_perk_hud[ index ] ) )
+	{
 		self.os_perk_hud[ index ] Destroy();
+		ArrayRemoveIndex( self.os_perk_hud, index );
+	}
 }

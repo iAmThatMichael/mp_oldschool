@@ -15,12 +15,19 @@ function get_spawn_points()
 	switch( GetDvarString( "mapname" ) )
 	{
 		case "mp_sector":
-			ARRAY_ADD( a_spawn_points, create_spawn( "weapon", (631.194, -289.895, 146.125) ) );
-			ARRAY_ADD( a_spawn_points, create_spawn( "weapon", (757.876, -265.068, 146.125) ) );
-			ARRAY_ADD( a_spawn_points, create_spawn( "equipment", (690.704, -645.807, 146.125) ) );
-			ARRAY_ADD( a_spawn_points, create_spawn( "perk", (767.606, -645.418, 152.545) ) );
-			ARRAY_ADD( a_spawn_points, create_spawn( "perk", (698.528, -756.297, 146.125) ) );
-			ARRAY_ADD( a_spawn_points, create_spawn( "boost", (687.746, -856.747, 146.125) ) );
+			ARRAY_ADD( a_spawn_points, create_spawn( "boost", (-7.07355, 175.53, 172.125) ) );
+			ARRAY_ADD( a_spawn_points, create_spawn( "equipment", (720.153, -337.304, 145.269) ) );
+			ARRAY_ADD( a_spawn_points, create_spawn( "equipment", (146.323, 1112.43, 160.125) ) );
+			ARRAY_ADD( a_spawn_points, create_spawn( "equipment", (177.61, -551.683, 272.125) ) );
+			ARRAY_ADD( a_spawn_points, create_spawn( "perk", (-863.134, 167.878, 108.125) ) );
+			ARRAY_ADD( a_spawn_points, create_spawn( "perk", (77.9822, -297.351, 152.125) ) );
+			ARRAY_ADD( a_spawn_points, create_spawn( "perk", (845.322, 1044.05, 156.125) ) );
+			ARRAY_ADD( a_spawn_points, create_spawn( "weapon", (-147.212, 1490.85, 142.321) ) );
+			ARRAY_ADD( a_spawn_points, create_spawn( "weapon", (-1128.87, 873.447, 135.255) ) );
+			ARRAY_ADD( a_spawn_points, create_spawn( "weapon", (-1104.75, -680.819, 148.125) ) );
+			ARRAY_ADD( a_spawn_points, create_spawn( "weapon", (-69.0299, -882.8, 152.125) ) );
+			ARRAY_ADD( a_spawn_points, create_spawn( "weapon", (506.806, 176.672, 152.803) ) );
+			ARRAY_ADD( a_spawn_points, create_spawn( "weapon", (-348.214, -1914.77, 155.428) ) );
 			break;
 		default:
 			break;
@@ -64,12 +71,14 @@ function debug_commands()
 		self.dev_hud[ 1 ] SetText( "[{+actionslot 1}]: Remove Last Point: <none>" );
 		self.dev_hud[ 2 ] SetText( "[{+actionslot 2}]: Cycle Type: " + self.dev_points_type );
 		self.dev_hud[ 3 ] SetText( "[{+actionslot 3}]: Print Points" );
+		self.dev_hud[ 3 ] SetText( "[{+actionslot 4}]: Show Points" );
 	}
 
 	self thread m_util::button_pressed( &UseButtonPressed, &add_point );
 	self thread m_util::button_pressed( &ActionSlotOneButtonPressed, &remove_point );
 	self thread m_util::button_pressed( &ActionSlotTwoButtonPressed, &cycle_point );
 	self thread m_util::button_pressed( &ActionSlotThreeButtonPressed, &print_points );
+	self thread m_util::button_pressed( &ActionSlotFourButtonPressed, &show_points );
 }
 
 function add_point()
@@ -109,4 +118,14 @@ function print_points()
 {
 	foreach( point in self.dev_points )
 		IPrintLn( "ARRAY_ADD( a_spawn_points, create_spawn( REP" + point.type + "REP, " + point.origin + " ) );" ); // T7 can't do \" escape sequence.
+}
+
+function show_points()
+{
+	foreach( point in self.dev_points )
+	{
+		/#
+		Print3D( point.origin, point.type, (1,0,0), 1, 1, 100 );
+		#/
+	}
 }
