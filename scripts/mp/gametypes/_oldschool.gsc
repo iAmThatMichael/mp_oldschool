@@ -67,7 +67,7 @@ function give_custom_loadout()
 	self TakeAllWeapons();
 	self ClearPerks();
 
-	primary_weapon = GetWeapon( "smg_capacity" );
+	primary_weapon = GetWeapon( "smg_standard" );
 	secondary_weapon = GetWeapon( "pistol_standard" );
 
 	self GiveWeapon( primary_weapon );

@@ -13,13 +13,20 @@
 #precache( "fx", FX_FLAG_BASE_GREEN );
 #precache( "fx", FX_FLAG_BASE_RED );
 #precache( "fx", FX_FLAG_BASE_YELLOW );
-#precache( "xmodel", MDL_FLAG_BASE );
-#precache( "objective", "pickup_item" );
-#precache( "string", "MOD_PICK_UP_ITEM" );
 
-#precache( "material", "mc/mtl_p7_perk_t7_hud_perk_flakjacket_image" );
-#precache( "material", "mc/mtl_p7_perk_t7_hud_perk_toughness_image" );
-#precache( "material", "mc/mtl_p7_perk_t7_hud_perk_fasthands_image" );
+#precache( "xmodel", MDL_FLAG_BASE );
+
+#precache( "xmodel", MDL_PERK_FLAKJACKET );
+#precache( "xmodel", MDL_PERK_FASTHANDS );
+#precache( "xmodel", MDL_PERK_GUNGHO );
+
+#precache( "material", MAT_PERK_FLACKJACKET );
+#precache( "material", MAT_PERK_FASTHANDS );
+#precache( "material", MAT_PERK_GUNGHO );
+
+#precache( "objective", OBJ_PICKUP_STR );
+#precache( "string", LNG_PICKUP_STR );
+
 
 #namespace oldschool_items;
 
@@ -228,7 +235,7 @@ function spawn_obj_trigger( selected )
 {
 	trigger = Spawn( "trigger_radius", self.origin + (0,0,32), 0, 64, 32 );
 	trigger SetCursorHint( "HINT_NOICON" );
-	trigger SetHintString( &"MOD_PICK_UP_ITEM", IString( selected.displayname ) );
+	trigger SetHintString( IString( LNG_PICKUP_STR ), IString( selected.displayname ) );
 	trigger TriggerIgnoreTeam();
 
 	return trigger;
@@ -241,7 +248,7 @@ function spawn_item_object()
 	trigger = self spawn_obj_trigger( selected );
 	visuals = Array( spawn_item( selected ) );
 
-	obj = gameobjects::create_use_object( "neutral", trigger, visuals, (0,0,0), IString("pickup_item") );
+	obj = gameobjects::create_use_object( "neutral", trigger, visuals, (0,0,0), IString( OBJ_PICKUP_STR ) );
 	obj gameobjects::set_use_time( 0 );
 	obj gameobjects::set_visible_team( "any" );
 
@@ -335,7 +342,7 @@ function select_boost()
 	// Re-enable the enhanced movement for the user [TomTheBomb from YouTube]
 	// Spawn a specialist weapon [Dasfonia]
 	specialists = Array( "hero_minigun", "hero_lightninggun", "hero_gravityspikes", "hero_armblade", "hero_annihilator", "hero_pineapplegun", "hero_bowlauncher", "hero_chemicalgelgun", "hero_flamethrower" );
-	selected = ( math::cointoss() ? GetWeapon( m_array::randomized_selection( specialists ) ) : "exo" );
+	selected = ( RandomInt(100) >= 25 ? GetWeapon( m_array::randomized_selection( specialists ) ) : "exo" );
 
 	if ( selected === "exo" )
 	{
@@ -368,7 +375,7 @@ function select_health()
 
 function select_perk()
 {
-	perks = Array( "flakjacket", "fasthands", "toughness" );
+	perks = Array( "flakjacket", "fasthands", "gungho" );
 	selected = m_array::randomized_selection( perks );
 	// TODO: replace by tablelookup modular code
 	switch( selected )
@@ -376,26 +383,26 @@ function select_perk()
 		case "flakjacket":
 			selected = SpawnStruct();
 			selected.displayname = "PERKS_FLAK_JACKET";
-			selected.worldModel= "p7_perk_t7_hud_perk_flakjacket";
+			selected.shader = MAT_PERK_FLACKJACKET;
 			selected.specialty = "specialty_flakjacket";
-			selected.shader = "mc/mtl_p7_perk_t7_hud_perk_flakjacket_image";
-			break;
+			selected.worldModel= MDL_PERK_FLAKJACKET;
+		break;
 
 		case "fasthands":
 			selected = SpawnStruct();
 			selected.displayname = "PERKS_FAST_HANDS";
-			selected.worldModel= "p7_perk_t7_hud_perk_fasthands";
+			selected.shader = MAT_PERK_FASTHANDS;
 			selected.specialty = "specialty_fastweaponswitch|specialty_sprintrecovery|specialty_sprintfirerecovery";
-			selected.shader = "mc/mtl_p7_perk_t7_hud_perk_fasthands_image";
-			break;
+			selected.worldModel= MDL_PERK_FASTHANDS;
+		break;
 
-		case "toughness":
+		case "gungho":
 			selected = SpawnStruct();
-			selected.displayname = "PERKS_TOUGHNESS";
-			selected.worldModel= "p7_perk_t7_hud_perk_toughness";
-			selected.specialty = "specialty_bulletflinch";
-			selected.shader = "mc/mtl_p7_perk_t7_hud_perk_toughness_image";
-			break;
+			selected.displayname = "PERKS_GUNG_HO";
+			selected.shader = MAT_PERK_GUNGHO;
+			selected.specialty = "specialty_sprintfire|specialty_sprintgrenadelethal|specialty_sprintgrenadetactical|specialty_sprintequipment";
+			selected.worldModel= MDL_PERK_GUNGHO;
+		break;
 	}
 
 	return selected;
@@ -404,7 +411,7 @@ function select_perk()
 function select_weapon()
 {
 	weapons = Array( "ar_standard", "smg_capacity", "lmg_light", "shotgun_precision", "sniper_powerbolt", "pistol_burst", "launcher_standard" );
-	dlc_weapons = Array( "ar_galil", "smg_ak74u", "lmg_infinite", "shotgun_olympia", "sniper_double", "pistol_shotgun", "special_crossbow" );
+	dlc_weapons = Array( "ar_an94", "smg_msmc", "lmg_infinite", "shotgun_olympia", "sniper_double", "pistol_shotgun", "special_crossbow" );
 
 	selected = GetWeapon( m_array::randomized_selection( ( math::cointoss() ? weapons: dlc_weapons ) ) );
 
