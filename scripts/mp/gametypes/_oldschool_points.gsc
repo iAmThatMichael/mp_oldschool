@@ -14,6 +14,47 @@ function get_spawn_points()
 
 	switch( GetDvarString( "mapname" ) )
 	{
+		case "mp_biodome": // Aquarium
+			ARRAY_ADD( a_spawn_points, create_spawn( "equipment", (1680.53, 732.833, 174.125) ) );
+			ARRAY_ADD( a_spawn_points, create_spawn( "perk", (1940.82, 1481.71, 174.125) ) );
+			ARRAY_ADD( a_spawn_points, create_spawn( "weapon", (2258.92, 1284.45, 136.125) ) );
+			ARRAY_ADD( a_spawn_points, create_spawn( "weapon", (2560.52, 493.627, 136.125) ) );
+			ARRAY_ADD( a_spawn_points, create_spawn( "weapon", (1654.97, 299.79, 136.125) ) );
+			ARRAY_ADD( a_spawn_points, create_spawn( "weapon", (1692.56, 1133.86, 136.125) ) );
+			ARRAY_ADD( a_spawn_points, create_spawn( "perk", (1382.72, 1642.06, 142.648) ) );
+			ARRAY_ADD( a_spawn_points, create_spawn( "boost", (-48.3978, 1243.45, 104.125) ) );
+			ARRAY_ADD( a_spawn_points, create_spawn( "equipment", (654.663, 1160.99, 136.625) ) );
+			ARRAY_ADD( a_spawn_points, create_spawn( "perk", (308.328, 268.221, 104.125) ) );
+			ARRAY_ADD( a_spawn_points, create_spawn( "weapon", (-663.105, 203.361, 104.125) ) );
+			ARRAY_ADD( a_spawn_points, create_spawn( "weapon", (-2177.63, 846.301, 232.125) ) );
+			ARRAY_ADD( a_spawn_points, create_spawn( "weapon", (-2357.04, 1467.94, 200.125) ) );
+			ARRAY_ADD( a_spawn_points, create_spawn( "weapon", (-937.394, 2223.43, 232.125) ) );
+			ARRAY_ADD( a_spawn_points, create_spawn( "weapon", (314.894, 2382.62, 232.207) ) );
+			ARRAY_ADD( a_spawn_points, create_spawn( "equipment", (-731.823, 2194.62, 232.125) ) );
+			ARRAY_ADD( a_spawn_points, create_spawn( "perk", (-1741.95, 2046.24, 232.125) ) );
+			ARRAY_ADD( a_spawn_points, create_spawn( "equipment", (-1022.17, 1245.89, 232.125) ) );
+			ARRAY_ADD( a_spawn_points, create_spawn( "perk", (-735.165, 1286.86, 232.125) ) );
+			ARRAY_ADD( a_spawn_points, create_spawn( "weapon", (-21.6491, 1636.48, 136.125) ) );
+			ARRAY_ADD( a_spawn_points, create_spawn( "equipment", (-361.204, 1439.44, 104.125) ) );
+			ARRAY_ADD( a_spawn_points, create_spawn( "perk", (-292.502, 741.158, 104.125) ) );
+			break;
+		case "mp_spire": // Breach
+			break;
+		case "mp_sector": // Combine
+			ARRAY_ADD( a_spawn_points, create_spawn( "boost", (-7.07355, 175.53, 172.125) ) );
+			ARRAY_ADD( a_spawn_points, create_spawn( "equipment", (720.153, -337.304, 145.269) ) );
+			ARRAY_ADD( a_spawn_points, create_spawn( "equipment", (146.323, 1112.43, 160.125) ) );
+			ARRAY_ADD( a_spawn_points, create_spawn( "equipment", (177.61, -551.683, 272.125) ) );
+			ARRAY_ADD( a_spawn_points, create_spawn( "perk", (-863.134, 167.878, 108.125) ) );
+			ARRAY_ADD( a_spawn_points, create_spawn( "perk", (77.9822, -297.351, 152.125) ) );
+			ARRAY_ADD( a_spawn_points, create_spawn( "perk", (845.322, 1044.05, 156.125) ) );
+			ARRAY_ADD( a_spawn_points, create_spawn( "weapon", (-147.212, 1490.85, 142.321) ) );
+			ARRAY_ADD( a_spawn_points, create_spawn( "weapon", (-1128.87, 873.447, 135.255) ) );
+			ARRAY_ADD( a_spawn_points, create_spawn( "weapon", (-1104.75, -680.819, 148.125) ) );
+			ARRAY_ADD( a_spawn_points, create_spawn( "weapon", (-69.0299, -882.8, 152.125) ) );
+			ARRAY_ADD( a_spawn_points, create_spawn( "weapon", (506.806, 176.672, 152.803) ) );
+			ARRAY_ADD( a_spawn_points, create_spawn( "weapon", (-348.214, -1914.77, 155.428) ) );
+			break;
 		case "mp_apartments": // Evac
 			ARRAY_ADD( a_spawn_points, create_spawn( "boost", (-1285.69, -1073.02, 1224.13) ) );
 			ARRAY_ADD( a_spawn_points, create_spawn( "weapon", (-1493.86, -231.744, 1320.13) ) );
@@ -60,46 +101,62 @@ function get_spawn_points()
 			ARRAY_ADD( a_spawn_points, create_spawn( "perk", (-683.711, -3566.45, 1320.13) ) );
 			ARRAY_ADD( a_spawn_points, create_spawn( "boost", (-2858.46, -653.07, 1100.07) ) );
 			break;
-		case "mp_biodome": // Aquarium
-			ARRAY_ADD( a_spawn_points, create_spawn( "equipment", (1680.53, 732.833, 174.125) ) );
-			ARRAY_ADD( a_spawn_points, create_spawn( "perk", (1940.82, 1481.71, 174.125) ) );
-			ARRAY_ADD( a_spawn_points, create_spawn( "weapon", (2258.92, 1284.45, 136.125) ) );
-			ARRAY_ADD( a_spawn_points, create_spawn( "weapon", (2560.52, 493.627, 136.125) ) );
-			ARRAY_ADD( a_spawn_points, create_spawn( "weapon", (1654.97, 299.79, 136.125) ) );
-			ARRAY_ADD( a_spawn_points, create_spawn( "weapon", (1692.56, 1133.86, 136.125) ) );
-			ARRAY_ADD( a_spawn_points, create_spawn( "perk", (1382.72, 1642.06, 142.648) ) );
-			ARRAY_ADD( a_spawn_points, create_spawn( "boost", (-48.3978, 1243.45, 104.125) ) );
-			ARRAY_ADD( a_spawn_points, create_spawn( "equipment", (654.663, 1160.99, 136.625) ) );
-			ARRAY_ADD( a_spawn_points, create_spawn( "perk", (308.328, 268.221, 104.125) ) );
-			ARRAY_ADD( a_spawn_points, create_spawn( "weapon", (-663.105, 203.361, 104.125) ) );
-			ARRAY_ADD( a_spawn_points, create_spawn( "weapon", (-2177.63, 846.301, 232.125) ) );
-			ARRAY_ADD( a_spawn_points, create_spawn( "weapon", (-2357.04, 1467.94, 200.125) ) );
-			ARRAY_ADD( a_spawn_points, create_spawn( "weapon", (-937.394, 2223.43, 232.125) ) );
-			ARRAY_ADD( a_spawn_points, create_spawn( "weapon", (314.894, 2382.62, 232.207) ) );
-			ARRAY_ADD( a_spawn_points, create_spawn( "equipment", (-731.823, 2194.62, 232.125) ) );
-			ARRAY_ADD( a_spawn_points, create_spawn( "perk", (-1741.95, 2046.24, 232.125) ) );
-			ARRAY_ADD( a_spawn_points, create_spawn( "equipment", (-1022.17, 1245.89, 232.125) ) );
-			ARRAY_ADD( a_spawn_points, create_spawn( "perk", (-735.165, 1286.86, 232.125) ) );
-			ARRAY_ADD( a_spawn_points, create_spawn( "weapon", (-21.6491, 1636.48, 136.125) ) );
-			ARRAY_ADD( a_spawn_points, create_spawn( "equipment", (-361.204, 1439.44, 104.125) ) );
-			ARRAY_ADD( a_spawn_points, create_spawn( "perk", (-292.502, 741.158, 104.125) ) );
+		case "mp_chinatown": // Exodus
 			break;
-		case "mp_sector": // Breach
-			ARRAY_ADD( a_spawn_points, create_spawn( "boost", (-7.07355, 175.53, 172.125) ) );
-			ARRAY_ADD( a_spawn_points, create_spawn( "equipment", (720.153, -337.304, 145.269) ) );
-			ARRAY_ADD( a_spawn_points, create_spawn( "equipment", (146.323, 1112.43, 160.125) ) );
-			ARRAY_ADD( a_spawn_points, create_spawn( "equipment", (177.61, -551.683, 272.125) ) );
-			ARRAY_ADD( a_spawn_points, create_spawn( "perk", (-863.134, 167.878, 108.125) ) );
-			ARRAY_ADD( a_spawn_points, create_spawn( "perk", (77.9822, -297.351, 152.125) ) );
-			ARRAY_ADD( a_spawn_points, create_spawn( "perk", (845.322, 1044.05, 156.125) ) );
-			ARRAY_ADD( a_spawn_points, create_spawn( "weapon", (-147.212, 1490.85, 142.321) ) );
-			ARRAY_ADD( a_spawn_points, create_spawn( "weapon", (-1128.87, 873.447, 135.255) ) );
-			ARRAY_ADD( a_spawn_points, create_spawn( "weapon", (-1104.75, -680.819, 148.125) ) );
-			ARRAY_ADD( a_spawn_points, create_spawn( "weapon", (-69.0299, -882.8, 152.125) ) );
-			ARRAY_ADD( a_spawn_points, create_spawn( "weapon", (506.806, 176.672, 152.803) ) );
-			ARRAY_ADD( a_spawn_points, create_spawn( "weapon", (-348.214, -1914.77, 155.428) ) );
+		case "mp_veiled": // Fringe
+			break;
+		case "mp_havoc": // Havoc
+			break;
+		case "mp_ethiopia": // Hunted
+			break;
+		case "mp_infection": // Infection
+			break;
+		case "mp_metro": // Metro
+			break;
+		case "mp_redwood": // Redwood
+			break;
+		case "mp_stronghold": // Stronghold
+			break;
+		case "mp_nuketown_x": // Nuk3town
+			break;
+		/***********DLC1***********/
+		case "mp_rise": // Rise
+			break;
+		case "mp_waterpark": // Splash
+			break;
+		case "mp_skyjacked": // Skyjacked
+			break;
+		case "mp_crucible": // Gauntlet
+			break;
+		/***********DLC2***********/
+		case "mp_aerospace": // Spire
+			break;
+		case "mp_conduit": // Rift
+			break;
+		case "mp_banzai": // Verge
+			break;
+		case "mp_kung_fu": // Knockout
+			break;
+		/***********DLC3***********/
+		case "mp_cryogen": // Cryogen
+			break;
+		case "mp_rally": // Rumble
+			break;
+		case "mp_rome": // Empire
+			break;
+		case "mp_shrine": // Berserk
+			break;
+		/***********DLC4***********/
+		case "mp_city": // Rupture
+			break;
+		case "mp_miniature": // Micro
+			break;
+		case "mp_ruins": // Citadel
+			break;
+		case "mp_western": // Outlaw
 			break;
 		default:
+			AssertMsg( "Unsupported map for Old School" );
 			break;
 	}
 
