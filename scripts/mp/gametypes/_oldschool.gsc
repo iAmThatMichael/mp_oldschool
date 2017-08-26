@@ -30,6 +30,7 @@ function autoexec init()
 function start_gametype()
 {
 	oldschool_items::spawn_items( oldschool_points::get_spawn_points() );
+	level thread on_end_gametype();
 }
 
 function on_player_connect()
@@ -37,9 +38,9 @@ function on_player_connect()
 	// pre-set the persistence to something so we prevent some errors related to menuTeam();
 	// --- WARNING: Setting this will break ESC menu
 	// --- ERROR: By disabling this healing will not work anymore.
-	self.pers["team"] = "axis";
+	self.pers["team"] = "free";
 	// moving to a built-in, still setting a team just in case.
-	self SetTeam( "axis" );
+	self SetTeam( "free" );
 	// set this before to satisfy the spawnClient, need to fill in broken statement _globalloigc_spawn::836
 	self.waitingToSpawn = true;
 	// something to satisfy matchRecordLogAdditionalDeathInfo 5th parameter (_globallogic_player)
@@ -93,4 +94,13 @@ function disable_charger()
 		self ResetDoubleJumpRechargeTime();
 		WAIT_SERVER_FRAME;
 	}
+}
+
+function on_end_gametype()
+{
+	level waittill( "game_ended" );
+
+	IPrintLn("Old School brought to you by: ^3DidUknowiPwn");
+	IPrintLn("^1YouTube^7: iPwnAtZombies, ^5Twitter^7: iAmThatMichael");
+	IPrintLn("Check out ^1UGX-Mods.com^7 for more mods!");
 }
