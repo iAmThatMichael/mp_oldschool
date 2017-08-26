@@ -14,6 +14,52 @@ function get_spawn_points()
 
 	switch( GetDvarString( "mapname" ) )
 	{
+		case "mp_apartments": // Evac
+			ARRAY_ADD( a_spawn_points, create_spawn( "boost", (-1285.69, -1073.02, 1224.13) ) );
+			ARRAY_ADD( a_spawn_points, create_spawn( "weapon", (-1493.86, -231.744, 1320.13) ) );
+			ARRAY_ADD( a_spawn_points, create_spawn( "weapon", (-1266.38, 89.742, 1320.13) ) );
+			ARRAY_ADD( a_spawn_points, create_spawn( "weapon", (-1513.38, 689.122, 1312.13) ) );
+			ARRAY_ADD( a_spawn_points, create_spawn( "weapon", (-1268.54, 1208.19, 1312.13) ) );
+			ARRAY_ADD( a_spawn_points, create_spawn( "weapon", (-824.035, 1718.5, 1246.21) ) );
+			ARRAY_ADD( a_spawn_points, create_spawn( "weapon", (-1085.64, 2037.62, 1312.13) ) );
+			ARRAY_ADD( a_spawn_points, create_spawn( "weapon", (-1918.81, 1068.03, 1312.13) ) );
+			ARRAY_ADD( a_spawn_points, create_spawn( "weapon", (-1952.88, 318.632, 1312.13) ) );
+			ARRAY_ADD( a_spawn_points, create_spawn( "weapon", (-2556.05, -817.178, 1216.13) ) );
+			ARRAY_ADD( a_spawn_points, create_spawn( "weapon", (-1929.96, -1191.64, 1312.13) ) );
+			ARRAY_ADD( a_spawn_points, create_spawn( "weapon", (-2164.44, -1904.75, 1312.13) ) );
+			ARRAY_ADD( a_spawn_points, create_spawn( "weapon", (-1583.79, -1532.88, 1312.13) ) );
+			ARRAY_ADD( a_spawn_points, create_spawn( "weapon", (-1191.22, -2578.45, 1271.76) ) );
+			ARRAY_ADD( a_spawn_points, create_spawn( "weapon", (-403.816, -2450.24, 1345.22) ) );
+			ARRAY_ADD( a_spawn_points, create_spawn( "weapon", (227.25, -1695.86, 1344.13) ) );
+			ARRAY_ADD( a_spawn_points, create_spawn( "weapon", (252.666, -1229.08, 1480.13) ) );
+			ARRAY_ADD( a_spawn_points, create_spawn( "weapon", (379.448, -441.254, 1342.54) ) );
+			ARRAY_ADD( a_spawn_points, create_spawn( "weapon", (-674.044, 331.913, 1472.13) ) );
+			ARRAY_ADD( a_spawn_points, create_spawn( "weapon", (95.2876, 616.44, 1344.13) ) );
+			ARRAY_ADD( a_spawn_points, create_spawn( "equipment", (-1474.81, 370.222, 1320.13) ) );
+			ARRAY_ADD( a_spawn_points, create_spawn( "equipment", (-731.078, 642.133, 1344.13) ) );
+			ARRAY_ADD( a_spawn_points, create_spawn( "equipment", (392.041, -628.9, 1342.71) ) );
+			ARRAY_ADD( a_spawn_points, create_spawn( "equipment", (-1611.39, -433.348, 1320.13) ) );
+			ARRAY_ADD( a_spawn_points, create_spawn( "equipment", (230.985, -828.506, 1480.13) ) );
+			ARRAY_ADD( a_spawn_points, create_spawn( "equipment", (-313.815, -1745.64, 1344.13) ) );
+			ARRAY_ADD( a_spawn_points, create_spawn( "equipment", (-1480.52, -3291.73, 1321.65) ) );
+			ARRAY_ADD( a_spawn_points, create_spawn( "equipment", (-1802.07, -2565.19, 1254.62) ) );
+			ARRAY_ADD( a_spawn_points, create_spawn( "equipment", (-2168.82, -1544.43, 1312.13) ) );
+			ARRAY_ADD( a_spawn_points, create_spawn( "equipment", (-2576.65, -477.171, 1216.13) ) );
+			ARRAY_ADD( a_spawn_points, create_spawn( "equipment", (-1795.39, 1144.64, 1439.13) ) );
+			ARRAY_ADD( a_spawn_points, create_spawn( "equipment", (-1456.75, 2201.96, 1315.61) ) );
+			ARRAY_ADD( a_spawn_points, create_spawn( "equipment", (-264.023, 334.013, 1470.9) ) );
+			ARRAY_ADD( a_spawn_points, create_spawn( "perk", (-769.191, -503.448, 1112.13) ) );
+			ARRAY_ADD( a_spawn_points, create_spawn( "perk", (-1452.42, -702.895, 1224.13) ) );
+			ARRAY_ADD( a_spawn_points, create_spawn( "perk", (-903.356, -1746.88, 1256.13) ) );
+			ARRAY_ADD( a_spawn_points, create_spawn( "perk", (-743.084, -2285.57, 1272.13) ) );
+			ARRAY_ADD( a_spawn_points, create_spawn( "perk", (259.141, -1240.96, 1344.13) ) );
+			ARRAY_ADD( a_spawn_points, create_spawn( "perk", (-310.89, -186.291, 1344.87) ) );
+			ARRAY_ADD( a_spawn_points, create_spawn( "perk", (-1799.75, 919.406, 1439.13) ) );
+			ARRAY_ADD( a_spawn_points, create_spawn( "perk", (-2437.18, -645.861, 1440.32) ) );
+			ARRAY_ADD( a_spawn_points, create_spawn( "perk", (-1531.6, -2654.79, 1271.13) ) );
+			ARRAY_ADD( a_spawn_points, create_spawn( "perk", (-683.711, -3566.45, 1320.13) ) );
+			ARRAY_ADD( a_spawn_points, create_spawn( "boost", (-2858.46, -653.07, 1100.07) ) );
+			break;
 		case "mp_biodome": // Aquarium
 			ARRAY_ADD( a_spawn_points, create_spawn( "equipment", (1680.53, 732.833, 174.125) ) );
 			ARRAY_ADD( a_spawn_points, create_spawn( "perk", (1940.82, 1481.71, 174.125) ) );
@@ -37,7 +83,7 @@ function get_spawn_points()
 			ARRAY_ADD( a_spawn_points, create_spawn( "weapon", (-21.6491, 1636.48, 136.125) ) );
 			ARRAY_ADD( a_spawn_points, create_spawn( "equipment", (-361.204, 1439.44, 104.125) ) );
 			ARRAY_ADD( a_spawn_points, create_spawn( "perk", (-292.502, 741.158, 104.125) ) );
-		break;
+			break;
 		case "mp_sector": // Breach
 			ARRAY_ADD( a_spawn_points, create_spawn( "boost", (-7.07355, 175.53, 172.125) ) );
 			ARRAY_ADD( a_spawn_points, create_spawn( "equipment", (720.153, -337.304, 145.269) ) );
@@ -147,6 +193,13 @@ function print_points()
 
 function show_points()
 {
+	foreach( point in level.spawnpoints )
+	{
+		/#
+		Print3D( point.origin, point.origin[2], (1,0,0), 1, 1, 100 );
+		#/
+	}
+
 	foreach( point in self.dev_points )
 	{
 		/#
