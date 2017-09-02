@@ -8,6 +8,7 @@
 #using scripts\mp\gametypes\_spawnlogic;
 #using scripts\mp\killstreaks\_killstreaks;
 #using scripts\mp\_util;
+#using scripts\mp\gametypes\_oldschool;
 
 #insert scripts\shared\shared.gsh;
 
