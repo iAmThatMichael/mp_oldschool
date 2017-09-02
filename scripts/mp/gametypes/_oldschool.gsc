@@ -9,8 +9,8 @@
 
 function autoexec init()
 {
-	if ( !IsInArray( Array( "tdm", "dm", "clean", "conf" ), ToLower( GetDvarString( "g_gametype" ) ) ) )
-		return;
+	//if ( !IsInArray( Array( "tdm", "dm", "clean", "conf" ), ToLower( GetDvarString( "g_gametype" ) ) ) )
+	//	return;
 
 	level.giveCustomLoadout = &give_custom_loadout;
 
@@ -18,7 +18,7 @@ function autoexec init()
 	callback::on_spawned( &on_player_spawned ); // extra code on spawning
 	callback::on_start_gametype( &start_gametype );
 
-	SetJumpHeight( 64 ); // stock is 39?
+	SetJumpHeight( 78 ); // stock is 39?
 
 	level oldschool_items::register( "boost", &oldschool_items::select_boost, &oldschool_items::on_use_boost, RandomIntRange( 1, 5 ) );
 	level oldschool_items::register( "equipment", &oldschool_items::select_equipment, &oldschool_items::on_use_equipment, 5 );
