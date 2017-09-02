@@ -149,6 +149,36 @@ function get_spawn_points()
 			ARRAY_ADD( a_spawn_points, create_spawn( "boost", (-2858.46, -653.07, 1100.07) ) );
 			break;
 		case "mp_chinatown": // Exodus
+			ARRAY_ADD( a_spawn_points, create_spawn( "boost", (66.0218, -2.21868, 105.077) ) );
+			ARRAY_ADD( a_spawn_points, create_spawn( "weapon", (-1175.13, -2165.51, 14.125) ) );
+			ARRAY_ADD( a_spawn_points, create_spawn( "weapon", (-178.941, -1858.29, 0.125) ) );
+			ARRAY_ADD( a_spawn_points, create_spawn( "weapon", (642.738, -2174.38, 32.125) ) );
+			ARRAY_ADD( a_spawn_points, create_spawn( "weapon", (1053.95, -1293.66, 64.125) ) );
+			ARRAY_ADD( a_spawn_points, create_spawn( "weapon", (33.2075, -866.332, 0.124998) ) );
+			ARRAY_ADD( a_spawn_points, create_spawn( "weapon", (-1174.99, -1232.04, 40.4218) ) );
+			ARRAY_ADD( a_spawn_points, create_spawn( "weapon", (-453.274, 1.81476, 0.125) ) );
+			ARRAY_ADD( a_spawn_points, create_spawn( "weapon", (1221.27, -2.26758, 120.125) ) );
+			ARRAY_ADD( a_spawn_points, create_spawn( "weapon", (79.2786, 852.773, 0.125) ) );
+			ARRAY_ADD( a_spawn_points, create_spawn( "weapon", (-846.329, 1634.06, 8.125) ) );
+			ARRAY_ADD( a_spawn_points, create_spawn( "weapon", (-858.698, 2917.11, 8.125) ) );
+			ARRAY_ADD( a_spawn_points, create_spawn( "weapon", (-113.875, 2644.09, 40.125) ) );
+			ARRAY_ADD( a_spawn_points, create_spawn( "weapon", (880.395, 1728.93, 83.125) ) );
+			ARRAY_ADD( a_spawn_points, create_spawn( "weapon", (1591.04, 956.742, 8.125) ) );
+			ARRAY_ADD( a_spawn_points, create_spawn( "equipment", (-142.879, -2406.29, 56.125) ) );
+			ARRAY_ADD( a_spawn_points, create_spawn( "equipment", (-393.839, -1791.79, 0.125) ) );
+			ARRAY_ADD( a_spawn_points, create_spawn( "equipment", (-1088, -738.903, -49.4427) ) );
+			ARRAY_ADD( a_spawn_points, create_spawn( "equipment", (-1204.05, 881.565, 9.79072) ) );
+			ARRAY_ADD( a_spawn_points, create_spawn( "equipment", (-119.379, 1708.67, 0.125) ) );
+			ARRAY_ADD( a_spawn_points, create_spawn( "equipment", (1248.61, 1878.79, 8.125) ) );
+			ARRAY_ADD( a_spawn_points, create_spawn( "equipment", (-216.601, -446.251, 8.125) ) );
+			ARRAY_ADD( a_spawn_points, create_spawn( "perk", (62.1513, -1980.87, 16.125) ) );
+			ARRAY_ADD( a_spawn_points, create_spawn( "perk", (-938.175, -1569.67, 9.26574) ) );
+			ARRAY_ADD( a_spawn_points, create_spawn( "perk", (655.328, -241.993, 144.125) ) );
+			ARRAY_ADD( a_spawn_points, create_spawn( "perk", (-245.785, 453.282, 8.125) ) );
+			ARRAY_ADD( a_spawn_points, create_spawn( "perk", (1459.03, 1236.37, 8.125) ) );
+			ARRAY_ADD( a_spawn_points, create_spawn( "perk", (351.438, 2832.61, 8.125) ) );
+			ARRAY_ADD( a_spawn_points, create_spawn( "weapon", (-1204.39, -21.0632, 152.125) ) );
+			ARRAY_ADD( a_spawn_points, create_spawn( "perk", (-1284.98, -7.28554, 0.125) ) );
 			break;
 		case "mp_veiled": // Fringe
 			break;
