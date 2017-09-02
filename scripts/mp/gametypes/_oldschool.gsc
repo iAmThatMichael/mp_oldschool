@@ -9,8 +9,22 @@
 
 function autoexec init()
 {
-	//if ( !IsInArray( Array( "tdm", "dm", "clean", "conf" ), ToLower( GetDvarString( "g_gametype" ) ) ) )
-	//	return;
+	if ( !IsInArray( Array( "tdm", "dm", "clean", "conf" ), ToLower( GetDvarString( "g_gametype" ) ) ) )
+		return;
+
+	SetGametypeSetting( "playerMaxHealth", 200 );
+	SetGametypeSetting( "disableClassSelection", 1 );
+	SetGametypeSetting( "disableCAC", 1 );
+	SetGametypeSetting( "loadoutKillStreaksEnabled", 0 );
+	SetGametypeSetting( "allowInGameTeamChange", 0 );
+	SetGametypeSetting( "disableweapondrop", 1 );
+
+	level.playerMaxHealth = GetGametypeSetting( "playerMaxHealth" );
+	level.disableClassSelection = GetGametypeSetting( "disableClassSelection" );
+	level.disableCAC = GetGametypeSetting( "disableCAC" );
+	level.loadoutKillstreaksEnabled = GetGametypeSetting( "loadoutKillStreaksEnabled" );
+	level.disableWeaponDrop = GetGametypeSetting( "disableweapondrop" );
+
 
 	level.giveCustomLoadout = &give_custom_loadout;
 
@@ -18,7 +32,7 @@ function autoexec init()
 	callback::on_spawned( &on_player_spawned ); // extra code on spawning
 	callback::on_start_gametype( &start_gametype );
 
-	SetJumpHeight( 78 ); // stock is 39?
+	SetJumpHeight( 64 ); // stock is 39?
 
 	level oldschool_items::register( "boost", &oldschool_items::select_boost, &oldschool_items::on_use_boost, RandomIntRange( 1, 5 ) );
 	level oldschool_items::register( "equipment", &oldschool_items::select_equipment, &oldschool_items::on_use_equipment, 5 );
@@ -57,6 +71,9 @@ function on_player_connect()
 
 function on_player_spawned()
 {
+	IPrintLn( "^1level " + level.playerMaxHealth );
+	IPrintLn( "^2self " + self.maxhealth );
+
 	self thread disable_charger();
 	/#
 	self thread oldschool_points::debug_commands();

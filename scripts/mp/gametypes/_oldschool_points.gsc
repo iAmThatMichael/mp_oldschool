@@ -11,7 +11,7 @@
 function get_spawn_points()
 {
 	a_spawn_points = [];
-	// thanks alexbegt
+
 	switch( GetDvarString( "mapname" ) )
 	{
 		case "mp_biodome": // Aquarium
