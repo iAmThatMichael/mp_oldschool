@@ -9,7 +9,7 @@
 
 function autoexec init()
 {
-	if ( !IsInArray( Array( "tdm", "dm" ), ToLower( GetDvarString( "g_gametype" ) ) ) )
+	if ( !IsInArray( Array( "tdm", "dm", "clean", "conf" ), ToLower( GetDvarString( "g_gametype" ) ) ) )
 		return;
 
 	level.giveCustomLoadout = &give_custom_loadout;
