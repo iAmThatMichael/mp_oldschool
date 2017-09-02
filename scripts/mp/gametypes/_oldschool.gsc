@@ -9,7 +9,7 @@
 
 function autoexec init()
 {
-	if ( !IsInArray( Array( "tdm", "dm", "clean", "conf" ), ToLower( GetDvarString( "g_gametype" ) ) ) )
+	if ( !IsInArray( Array( "tdm", "dm", "conf" ), ToLower( GetDvarString( "g_gametype" ) ) ) )
 		return;
 
 	SetGametypeSetting( "playerMaxHealth", 200 );
@@ -71,9 +71,6 @@ function on_player_connect()
 
 function on_player_spawned()
 {
-	IPrintLn( "^1level " + level.playerMaxHealth );
-	IPrintLn( "^2self " + self.maxhealth );
-
 	self thread disable_charger();
 	/#
 	self thread oldschool_points::debug_commands();

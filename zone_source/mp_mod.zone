@@ -3,6 +3,7 @@
 
 #include "mp_mod.class"
 
+rawfile,gamedata/gamesettings/mp/gamesettings_conf.cfg
 rawfile,gamedata/gamesettings/mp/gamesettings_dm.cfg
 rawfile,gamedata/gamesettings/mp/gamesettings_tdm.cfg
 
