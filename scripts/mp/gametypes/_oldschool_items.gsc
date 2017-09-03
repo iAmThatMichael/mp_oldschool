@@ -71,7 +71,7 @@ function on_use_boost( player )
 	// is a weapon, and has the weapon
 	else if ( IsWeapon( item ) && player HasWeapon( item ) )
 	{
-		player GiveStartAmmo( item );
+		player GiveMaxAmmo( item );
 		slot = player GadgetGetSlot( item );
 		player GadgetPowerSet( slot, 100.0 );
 		self disable_obj();
@@ -352,7 +352,7 @@ function select_boost()
 	// Re-enable the enhanced movement for the user [TomTheBomb from YouTube]
 	// Spawn a specialist weapon [Dasfonia]
 	specialists = Array( "hero_minigun", "hero_lightninggun", "hero_gravityspikes", "hero_armblade", "hero_annihilator", "hero_pineapplegun", "hero_bowlauncher", "hero_chemicalgelgun", "hero_flamethrower" );
-	selected = ( RandomInt(100) >= 25 ? GetWeapon( m_array::randomized_selection( specialists ) ) : "exo" );
+	selected = ( RandomInt(100) >= 20 ? GetWeapon( m_array::randomized_selection( specialists ) ) : "exo" );
 
 	if ( selected === "exo" )
 	{
@@ -468,9 +468,11 @@ function take_player_gadgets()
 	foreach ( weapon in weapons )
 	{
 		if ( weapon.isgadget )
+		{
 			self TakeWeapon( weapon );
+			self GadgetPowerSet( self GadgetGetSlot( weapon ), 0.0 );
+		}
 	}
-	self GadgetPowerReset( 0, 0.0 );
 }
 
 function take_gadget_watcher( slot, weapon )
@@ -478,30 +480,13 @@ function take_gadget_watcher( slot, weapon )
 	self endon( "death" );
 	self endon( "disconnect" );
 
-	shouldTake = false;
+	self notify( "watcherGadgetActivated_singleton" );
+	self endon ( "watcherGadgetActivated_singleton" );
 
-	while ( true )
-	{
-		result = self util::waittill_any_return( "weapon_change", "grenade_pullback" );
-		// make sure to not do it on equipment
-		if ( result == "grenade_pullback" )
-		{
-			// also because shouldTake would return true for this case make sure to stop it
-			shouldTake = false;
-			continue;
-		}
-
-		if ( shouldTake )
-		{
-			self TakeWeapon( weapon );
-			self GadgetPowerSet( slot, 0.0 );
-			break;
-		}
-
-		shouldTake = ( self GetCurrentWeapon() === weapon );
-
-		WAIT_SERVER_FRAME;
-	}
+	self waittill( "hero_gadget_activated" );
+	self waittill( "heroAbility_off" );
+	self GadgetPowerSet( slot, 0.0 );
+	self TakeWeapon( weapon );
 }
 
 function set_exo_for_time( time )
