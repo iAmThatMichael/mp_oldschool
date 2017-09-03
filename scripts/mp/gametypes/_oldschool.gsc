@@ -25,7 +25,7 @@ function autoexec init()
 	level.loadoutKillstreaksEnabled = GetGametypeSetting( "loadoutKillStreaksEnabled" );
 	level.disableWeaponDrop = GetGametypeSetting( "disableweapondrop" );
 
-
+	level.item_spawns_random = GetDvarInt( "os_random_item_spawn", 0 );
 	level.giveCustomLoadout = &give_custom_loadout;
 
 	callback::on_connect( &on_player_connect ); // force teams on connecting

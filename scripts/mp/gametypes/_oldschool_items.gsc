@@ -72,7 +72,8 @@ function on_use_boost( player )
 	else if ( IsWeapon( item ) && player HasWeapon( item ) )
 	{
 		player GiveStartAmmo( item );
-		player GadgetPowerSet( 0, 100.0 );
+		slot = player GadgetGetSlot( item );
+		player GadgetPowerSet( slot, 100.0 );
 		self disable_obj();
 	}
 	// use pressed, isn't a weapon
@@ -241,7 +242,7 @@ function spawn_obj_trigger( selected )
 	return trigger;
 }
 // self == point
-function spawn_item_object()
+function spawn_item_object( respawn = false )
 {
 	selected = [[ level.os_item[ self.type ].select_func ]]();
 
@@ -256,9 +257,10 @@ function spawn_item_object()
 	obj gameobjects::set_model_visibility( true );
 
 	obj.onUse = level.os_item[ self.type ].use_func;
-	obj.base = self spawn_base();
 	obj.selected = selected;
 	obj.respawn_time = level.os_item[ self.type ].respawn_time;
+	obj.point = self;
+	obj.point.base = ( !respawn ? self spawn_base() : self.base );
 }
 
 function spawn_item( selected )
@@ -308,7 +310,7 @@ function spawn_items( a_spawn_points )
 
 function disable_obj()
 {
-	self.base spawn_base_fx( FX_FLAG_BASE_RED );
+	self.point.base spawn_base_fx( FX_FLAG_BASE_RED );
 	self PlaySound( "mod_oldschool_pickup" );
 
 	self gameobjects::disable_object();
@@ -318,7 +320,7 @@ function disable_obj()
 
 function enable_obj()
 {
-	self.base spawn_base_fx( FX_FLAG_BASE_YELLOW );
+	self.point.base spawn_base_fx( FX_FLAG_BASE_YELLOW );
 	self PlaySound( "mod_oldschool_return" );
 
 	self gameobjects::enable_object();
@@ -330,7 +332,15 @@ function respawn_obj()
 {
 	wait self.respawn_time;
 
-	self enable_obj();
+	if ( level.item_spawns_random )
+	{
+		self gameobjects::destroy_object( true );
+		self.point spawn_item_object( true );
+		self.point.base spawn_base_fx( FX_FLAG_BASE_YELLOW );
+		self PlaySound( "mod_oldschool_return" );
+	}
+	else
+		self enable_obj();
 }
 
 // ***************************
@@ -460,6 +470,7 @@ function take_player_gadgets()
 		if ( weapon.isgadget )
 			self TakeWeapon( weapon );
 	}
+	self GadgetPowerReset( 0, 0.0 );
 }
 
 function take_gadget_watcher( slot, weapon )
