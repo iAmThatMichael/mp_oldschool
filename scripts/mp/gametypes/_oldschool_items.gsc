@@ -65,7 +65,7 @@ function on_use_boost( player )
 		player GiveWeapon( item );
 		slot = player GadgetGetSlot( item );
 		player GadgetPowerSet( slot, 100.0 );
-		player thread take_gadget_watcher( slot, item );
+		player thread take_gadget_watcher();
 		self disable_obj();
 	}
 	// is a weapon, and has the weapon
@@ -475,7 +475,7 @@ function take_player_gadgets()
 	}
 }
 
-function take_gadget_watcher( slot, weapon )
+function take_gadget_watcher()
 {
 	self endon( "death" );
 	self endon( "disconnect" );
@@ -483,9 +483,8 @@ function take_gadget_watcher( slot, weapon )
 	self notify( "watcherGadgetActivated_singleton" );
 	self endon ( "watcherGadgetActivated_singleton" );
 
-	self waittill( "hero_gadget_activated" );
-	self waittill( "heroAbility_off" );
-	self GadgetPowerSet( slot, 0.0 );
+	self waittill( "heroAbility_off", weapon );
+	self GadgetPowerSet( self GadgetGetSlot( weapon ) , 0.0 );
 	self TakeWeapon( weapon );
 }
 
