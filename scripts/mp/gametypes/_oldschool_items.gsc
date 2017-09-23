@@ -496,10 +496,12 @@ function set_exo_for_time( time )
 	self.exo_enabled = true;
 	self AllowDoubleJump( true );
 
-	wait( time );
+	self thread create_perk_hud( "specialty_jetcharger" );
+	// DESIGN: keep it forever as per feedback
+	//wait( time );
 
-	self.exo_enabled = false;
-	self AllowDoubleJump( false );
+	//self.exo_enabled = false;
+	//self AllowDoubleJump( false );
 }
 
 function set_bob_item()
@@ -527,6 +529,12 @@ function create_perk_hud( item )
 
 	hud = hud::createIcon( item.shader , ICONSIZE, ICONSIZE );
 	hud hud::setPoint( "BOTTOM LEFT", "BOTTOM LEFT", xpos, ypos );
+	hud.horzalign = "user_left";
+	hud.vertalign = "user_bottom";
+	hud.archived = false;
+	hud.foreground = false;
+	hud.hidewheninmenu = true;
+	hud.immunetodemogamehudsettings = true;
 
 	ARRAY_ADD( self.os_perk_hud, hud );
 
