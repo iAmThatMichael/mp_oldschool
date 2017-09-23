@@ -1,4 +1,5 @@
 #using scripts\shared\callbacks_shared;
+#using scripts\shared\util_shared;
 #using scripts\mp\gametypes\_oldschool_items;
 #using scripts\mp\gametypes\_oldschool_points;
 
@@ -44,7 +45,7 @@ function autoexec init()
 function start_gametype()
 {
 	oldschool_items::spawn_items( oldschool_points::get_spawn_points() );
-	level thread on_end_gametype();
+	level thread btyb_message();
 }
 
 function on_player_connect()
@@ -89,7 +90,8 @@ function give_custom_loadout()
 	self GiveWeapon( secondary_weapon );
 	self SetSpawnWeapon( primary_weapon );
 
-	self.grenadeTypeSecondary = "emp"; // just input something to satisify _weaponobjects::2924
+	self.grenadeTypeSecondary = GetWeapon( "trophy_system" ); // just input something to satisfy _weaponobjects::2924
+	self.grenadeTypeSecondaryCount = 0; // ^
 
 	return primary_weapon;
 }
@@ -110,11 +112,14 @@ function disable_charger()
 	}
 }
 
-function on_end_gametype()
+function btyb_message()
 {
-	level waittill( "game_ended" );
+	while ( true )
+	{
+		level util::waittill_either( "prematch_over", "game_ended" );
 
-	IPrintLn("Old School brought to you by: ^3DidUknowiPwn");
-	IPrintLn("^1YouTube^7: iPwnAtZombies, ^5Twitter^7: iAmThatMichael");
-	IPrintLn("Check out ^1UGX-Mods.com^7 for more mods!");
+		IPrintLn("Old School brought to you by: ^3DidUknowiPwn");
+		IPrintLn("^1YouTube^7: iPwnAtZombies, ^5Twitter^7: iAmThatMichael");
+		IPrintLn("Check out ^1UGX-Mods.com^7 for more mods!");	
+	}
 }
