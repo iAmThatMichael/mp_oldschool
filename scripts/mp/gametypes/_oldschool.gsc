@@ -35,11 +35,11 @@ function autoexec init()
 
 	SetJumpHeight( 64 ); // stock is 39?
 
-	level oldschool_items::register( "boost", &oldschool_items::select_boost, &oldschool_items::on_use_boost, RandomIntRange( 1, 5 ) );
-	level oldschool_items::register( "equipment", &oldschool_items::select_equipment, &oldschool_items::on_use_equipment, 5 );
-	level oldschool_items::register( "health", &oldschool_items::select_health, &oldschool_items::on_use_health, 5 );
-	level oldschool_items::register( "perk", &oldschool_items::select_perk, &oldschool_items::on_use_perk, 5 );
-	level oldschool_items::register( "weapon", &oldschool_items::select_weapon, &oldschool_items::on_use_weapon, 5 );
+	level oldschool_items::register( "boost", &oldschool_items::select_boost, &oldschool_items::on_use_boost, RandomIntRange( 15, 26 ) );
+	level oldschool_items::register( "equipment", &oldschool_items::select_equipment, &oldschool_items::on_use_equipment, 15 );
+	level oldschool_items::register( "health", &oldschool_items::select_health, &oldschool_items::on_use_health, 15 );
+	level oldschool_items::register( "perk", &oldschool_items::select_perk, &oldschool_items::on_use_perk, 15 );
+	level oldschool_items::register( "weapon", &oldschool_items::select_weapon, &oldschool_items::on_use_weapon, 15 );
 }
 
 function start_gametype()

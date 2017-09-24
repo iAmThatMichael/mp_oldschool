@@ -10,6 +10,7 @@
 #define MAT_PERK_FLACKJACKET "mc/mtl_p7_perk_t7_hud_perk_flakjacket_image"
 #define MAT_PERK_FASTHANDS "mc/mtl_p7_perk_t7_hud_perk_fasthands_image"
 #define MAT_PERK_GUNGHO "mc/mtl_p7_perk_t7_hud_perk_gungho_image"
+#define MAT_PERK_CHARGER "mc/mtl_p7_perk_t7_hud_perk_jetcharge_image"
 
 // Boost Models
 #define MDL_ITEM_EXO "p7_perk_t7_hud_perk_jetcharge"

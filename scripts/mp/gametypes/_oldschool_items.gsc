@@ -23,6 +23,7 @@
 #precache( "material", MAT_PERK_FLACKJACKET );
 #precache( "material", MAT_PERK_FASTHANDS );
 #precache( "material", MAT_PERK_GUNGHO );
+#precache( "material", MAT_PERK_CHARGER );
 
 #precache( "objective", OBJ_PICKUP_STR );
 #precache( "string", LNG_PICKUP_STR );
@@ -165,7 +166,7 @@ function on_use_perk( player )
 
 	if ( player UseButtonPressed() && !player HasPerk( perks[0] ) )
 	{
-		player thread create_perk_hud( item );
+		player thread create_perk_hud( item.shader );
 
 		if ( perks.size > 1 )
 		{
@@ -234,10 +235,11 @@ function on_use_weapon( player )
 
 function spawn_obj_trigger( selected )
 {
-	trigger = Spawn( "trigger_radius", self.origin + (0,0,32), 0, 64, 32 );
+	trigger = Spawn( "trigger_radius_use", self.origin + (0,0,32), 0, 32, 32 );
 	trigger SetCursorHint( "HINT_NOICON" );
 	trigger SetHintString( IString( LNG_PICKUP_STR ), IString( selected.displayname ) );
 	trigger TriggerIgnoreTeam();
+	trigger UseTriggerRequireLookAt();
 
 	return trigger;
 }
@@ -496,7 +498,7 @@ function set_exo_for_time( time )
 	self.exo_enabled = true;
 	self AllowDoubleJump( true );
 
-	self thread create_perk_hud( "specialty_jetcharger" );
+	self thread create_perk_hud( MAT_PERK_CHARGER );
 	// DESIGN: keep it forever as per feedback
 	//wait( time );
 
@@ -514,7 +516,7 @@ function set_rotate_item()
 	self Rotate( (0,PICKUP_ROTATE_RATE,0) );
 }
 
-function create_perk_hud( item )
+function create_perk_hud( shader )
 {
 	self endon( "death" );
 	self endon( "disconnect" );
@@ -527,7 +529,7 @@ function create_perk_hud( item )
 	ypos = -30 - ( 30 * index );
 	xpos = 220;
 
-	hud = hud::createIcon( item.shader , ICONSIZE, ICONSIZE );
+	hud = hud::createIcon( shader , ICONSIZE, ICONSIZE );
 	hud hud::setPoint( "BOTTOM LEFT", "BOTTOM LEFT", xpos, ypos );
 	hud.horzalign = "user_left";
 	hud.vertalign = "user_bottom";
