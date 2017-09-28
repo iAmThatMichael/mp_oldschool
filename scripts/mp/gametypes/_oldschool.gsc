@@ -44,8 +44,13 @@ function autoexec init()
 
 function start_gametype()
 {
-	oldschool_items::spawn_items( oldschool_points::get_spawn_points() );
 	level thread btyb_message();
+
+	spawn_points = oldschool_points::get_spawn_points();
+	if ( spawn_points.size > 0 )
+		oldschool_items::spawn_items( spawn_points );
+	else
+		AssertMsg( "No spawnpoints found for this map." );
 }
 
 function on_player_connect()

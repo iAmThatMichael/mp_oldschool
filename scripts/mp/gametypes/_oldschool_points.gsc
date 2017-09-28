@@ -90,7 +90,8 @@ function get_spawn_points()
 		case "mp_western": // Outlaw
 			break;
 		default:
-			AssertMsg( "Unsupported map for Old School" );
+			foreach( point in GetEntArray( "mp_oldschool_spawn", "targetname" ) )
+				ARRAY_ADD( a_spawn_points, create_spawn( point.script_string, point.origin );
 			break;
 	}
 
